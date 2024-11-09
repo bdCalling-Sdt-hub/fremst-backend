@@ -15,6 +15,7 @@ const userSchema = new Schema<IUser, UserModal>(
     role: {
       type: String,
       enum: Object.values(USER_ROLES),
+      default: USER_ROLES.ADMIN,
       required: true,
     },
     email: {
@@ -23,23 +24,17 @@ const userSchema = new Schema<IUser, UserModal>(
       unique: true,
       lowercase: true,
     },
-    contact: {
-      type: String,
-      required: true,
-    },
+
     password: {
       type: String,
       required: true,
       select: 0,
       minlength: 8,
     },
-    location: {
-      type: String,
-      required: true,
-    },
+
     profile: {
       type: String,
-      default: 'https://i.ibb.co/z5YHLV9/profile.png',
+      default: '/profiles/default.png',
     },
     status: {
       type: String,
@@ -48,7 +43,7 @@ const userSchema = new Schema<IUser, UserModal>(
     },
     verified: {
       type: Boolean,
-      default: false,
+      default: true,
     },
     authentication: {
       type: {

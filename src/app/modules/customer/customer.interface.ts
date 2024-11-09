@@ -2,10 +2,10 @@ import { Model, Types } from 'mongoose';
 
 export type ICustomer = {
   companyName: string;
-  companyPhone: number;
+  companyPhone: string;
   contactPerson: string;
   email: string;
-  phone: number;
+  phone: string;
   address: string;
 };
 

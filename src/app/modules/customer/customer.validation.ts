@@ -6,9 +6,9 @@ export const CustomerValidation = {
         required_error: 'companyName is required',
         invalid_type_error: 'companyName should be type string',
       }),
-      companyPhone: z.number({
+      companyPhone: z.string({
         required_error: 'companyPhone is required',
-        invalid_type_error: 'companyPhone should be type number',
+        invalid_type_error: 'companyPhone should be type string',
       }),
       contactPerson: z.string({
         required_error: 'contactPerson is required',
@@ -18,9 +18,9 @@ export const CustomerValidation = {
         required_error: 'email is required',
         invalid_type_error: 'email should be type string',
       }),
-      phone: z.number({
+      phone: z.string({
         required_error: 'phone is required',
-        invalid_type_error: 'phone should be type number',
+        invalid_type_error: 'phone should be type string',
       }),
       address: z.string({
         required_error: 'address is required',
@@ -34,7 +34,7 @@ export const CustomerValidation = {
         .string({ invalid_type_error: 'companyName should be type string' })
         .optional(),
       companyPhone: z
-        .number({ invalid_type_error: 'companyPhone should be type number' })
+        .string({ invalid_type_error: 'companyPhone should be type string' })
         .optional(),
       contactPerson: z
         .string({ invalid_type_error: 'contactPerson should be type string' })
@@ -43,7 +43,7 @@ export const CustomerValidation = {
         .string({ invalid_type_error: 'email should be type string' })
         .optional(),
       phone: z
-        .number({ invalid_type_error: 'phone should be type number' })
+        .string({ invalid_type_error: 'phone should be type string' })
         .optional(),
       address: z
         .string({ invalid_type_error: 'address should be type string' })

@@ -24,6 +24,7 @@ const getAllCustomers = async (search: string): Promise<ICustomer[]> => {
         { address: { $regex: search, $options: 'i' } },
       ],
     });
+    return result;
   } else {
     result = await Customer.find();
   }

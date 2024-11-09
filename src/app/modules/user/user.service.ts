@@ -10,31 +10,37 @@ import { IUser } from './user.interface';
 import { User } from './user.model';
 
 const createUserToDB = async (payload: Partial<IUser>): Promise<IUser> => {
-  //set role
-  const createUser = await User.create(payload);
+  let createUser;
+  if (payload.role === USER_ROLES.SUPERADMIN) {
+    const isExistAdmin = await User.findOne({ role: USER_ROLES.SUPERADMIN });
+    if (isExistAdmin) {
+      throw new ApiError(StatusCodes.BAD_REQUEST, 'Super admin already exist');
+    }
+  }
+  createUser = await User.create(payload);
   if (!createUser) {
     throw new ApiError(StatusCodes.BAD_REQUEST, 'Failed to create user');
   }
 
-  //send email
-  const otp = generateOTP();
-  const values = {
-    name: createUser.name,
-    otp: otp,
-    email: createUser.email!,
-  };
-  const createAccountTemplate = emailTemplate.createAccount(values);
-  emailHelper.sendEmail(createAccountTemplate);
+  // //send email
+  // const otp = generateOTP();
+  // const values = {
+  //   name: createUser.name,
+  //   otp: otp,
+  //   email: createUser.email!,
+  // };
+  // const createAccountTemplate = emailTemplate.createAccount(values);
+  // emailHelper.sendEmail(createAccountTemplate);
 
-  //save to DB
-  const authentication = {
-    oneTimeCode: otp,
-    expireAt: new Date(Date.now() + 3 * 60000),
-  };
-  await User.findOneAndUpdate(
-    { _id: createUser._id },
-    { $set: { authentication } }
-  );
+  // //save to DB
+  // const authentication = {
+  //   oneTimeCode: otp,
+  //   expireAt: new Date(Date.now() + 3 * 60000),
+  // };
+  // await User.findOneAndUpdate(
+  //   { _id: createUser._id },
+  //   { $set: { authentication } }
+  // );
 
   return createUser;
 };
@@ -73,8 +79,34 @@ const updateProfileToDB = async (
   return updateDoc;
 };
 
+const getAdminsFromDB = async (): Promise<Partial<IUser>[]> => {
+  const admins = await User.find({ role: USER_ROLES.ADMIN });
+  return admins;
+};
+
+const getAdminByID = async (id: string): Promise<Partial<IUser>> => {
+  const admin = await User.findOne({ _id: id, role: USER_ROLES.ADMIN });
+  if (!admin) {
+    throw new ApiError(StatusCodes.BAD_REQUEST, "Admin doesn't exist!");
+  }
+  return admin;
+};
+const deleteAdminByID = async (id: string): Promise<Partial<IUser>> => {
+  const admin = await User.findOneAndDelete({
+    _id: id,
+    role: USER_ROLES.ADMIN,
+  });
+  if (!admin) {
+    throw new ApiError(StatusCodes.BAD_REQUEST, "Admin doesn't exist!");
+  }
+  return admin;
+};
+
 export const UserService = {
   createUserToDB,
+  getAdminsFromDB,
   getUserProfileFromDB,
+  deleteAdminByID,
+  getAdminByID,
   updateProfileToDB,
 };

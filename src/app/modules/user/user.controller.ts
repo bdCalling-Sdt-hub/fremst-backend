@@ -53,5 +53,43 @@ const updateProfile = catchAsync(
     });
   }
 );
+const getAdmins = catchAsync(async (req: Request, res: Response) => {
+  const result = await UserService.getAdminsFromDB();
 
-export const UserController = { createUser, getUserProfile, updateProfile };
+  sendResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: 'Admins fetched successfully',
+    data: result,
+  });
+});
+const getAdminByID = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const result = await UserService.getAdminByID(id);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: 'Admin fetched successfully',
+    data: result,
+  });
+});
+const deleteAdminByID = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const result = await UserService.deleteAdminByID(id);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: 'Admin deleted successfully',
+    data: result,
+  });
+});
+export const UserController = {
+  createUser,
+  getUserProfile,
+  updateProfile,
+  getAdminByID,
+  getAdmins,
+  deleteAdminByID,
+};

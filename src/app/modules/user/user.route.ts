@@ -16,6 +16,7 @@ router.get(
 router
   .route('/')
   .post(
+    auth(USER_ROLES.SUPERADMIN),
     validateRequest(UserValidation.createUserZodSchema),
     UserController.createUser
   )
@@ -24,5 +25,16 @@ router
     fileUploadHandler(),
     UserController.updateProfile
   );
+router.get('/admins', auth(USER_ROLES.SUPERADMIN), UserController.getAdmins);
+router.get(
+  '/admins/:id',
+  auth(USER_ROLES.SUPERADMIN),
+  UserController.getAdminByID
+);
+router.delete(
+  '/admins/:id',
+  auth(USER_ROLES.SUPERADMIN),
+  UserController.deleteAdminByID
+);
 
 export const UserRoutes = router;

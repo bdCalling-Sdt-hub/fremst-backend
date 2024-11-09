@@ -8,19 +8,31 @@ import { CustomerValidation } from './customer.validation';
 const router = express.Router();
 
 router.post(
-  '/create',
-  auth(USER_ROLES.ADMIN),
+  '/add',
+  auth(USER_ROLES.ADMIN, USER_ROLES.SUPERADMIN),
   validateRequest(CustomerValidation.createCustomerZodSchema),
   CustomerController.createCustomer
 );
-router.get('/', CustomerController.getAllCustomers);
-router.get('/:id', CustomerController.getCustomerById);
+router.get(
+  '/',
+  auth(USER_ROLES.ADMIN, USER_ROLES.SUPERADMIN),
+  CustomerController.getAllCustomers
+);
+router.get(
+  '/:id',
+  auth(USER_ROLES.ADMIN, USER_ROLES.SUPERADMIN),
+  CustomerController.getCustomerById
+);
 router.patch(
   '/:id',
-  auth(USER_ROLES.ADMIN),
+  auth(USER_ROLES.ADMIN, USER_ROLES.SUPERADMIN),
   validateRequest(CustomerValidation.updateCustomerZodSchema),
   CustomerController.updateCustomer
 );
-router.delete('/:id', auth(USER_ROLES.ADMIN), CustomerController.deleteCustomer);
+router.delete(
+  '/:id',
+  auth(USER_ROLES.ADMIN, USER_ROLES.SUPERADMIN),
+  CustomerController.deleteCustomer
+);
 
 export const CustomerRoutes = router;

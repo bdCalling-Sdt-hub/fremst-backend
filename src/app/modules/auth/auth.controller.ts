@@ -41,7 +41,9 @@ const forgetPassword = catchAsync(async (req: Request, res: Response) => {
 });
 
 const resetPassword = catchAsync(async (req: Request, res: Response) => {
-  const token = req.headers.authorization;
+  const bareer = req.headers.authorization;
+  const token = bareer?.split(' ')[1];
+  if (!token) throw new Error('Reset Token not found');
   const { ...resetData } = req.body;
   const result = await AuthService.resetPasswordToDB(token!, resetData);
 
