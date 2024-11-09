@@ -2,8 +2,18 @@ import { StatusCodes } from 'http-status-codes';
 import ApiError from '../../../errors/ApiError';
 import { Product } from './product.model';
 import { IProduct } from './product.interface';
+import { ProductValidation } from './product.validation';
 
-const createProduct = async (payload: IProduct): Promise<IProduct> => {
+const createProductToDB = async (payload: any): Promise<IProduct> => {
+  // console.log({
+  //   ...payload,
+  //   isActive: payload.isActive.includes('true') ? true : false,
+  //   inspectionHistory: JSON.parse(payload.inspectionHistory.replace(/'/g, '"')),
+  // });
+  await ProductValidation.createProductZodSchema.parseAsync({
+    ...payload,
+    isActive: payload.isActive === 'true' ? true : false,
+  });
   const result = await Product.create(payload);
   if (!result) {
     throw new ApiError(StatusCodes.BAD_REQUEST, 'Failed to create product!');
@@ -24,7 +34,6 @@ const getAllProducts = async (search: string): Promise<IProduct[]> => {
         { enStandard: { $regex: search, $options: 'i' } },
         { inspectionInterval: { $regex: search, $options: 'i' } },
         { latestInspectionDate: { $regex: search, $options: 'i' } },
-        { isActive: { $regex: search, $options: 'i' } },
         { inspectionHistory: { $regex: search, $options: 'i' } },
         { companyName: { $regex: search, $options: 'i' } },
         { contactPerson: { $regex: search, $options: 'i' } },
@@ -49,6 +58,20 @@ const updateProduct = async (
   id: string,
   payload: IProduct
 ): Promise<IProduct | null> => {
+  const isExistProduct = await Product.findById(id);
+  if (!isExistProduct) {
+    throw new ApiError(StatusCodes.BAD_REQUEST, 'Product not found!');
+  }
+  if (payload.inspectionHistory) {
+    payload.inspectionHistory = JSON.parse(
+      //@ts-ignore
+      payload.inspectionHistory.replace(/'/g, '"')
+    );
+  }
+  if (payload.image && payload.image !== '/images/default.png') {
+    await isExistProduct.image;
+  }
+  await ProductValidation.updateProductZodSchema.parseAsync(payload);
   const result = await Product.findByIdAndUpdate(id, payload, { new: true });
   if (!result) {
     throw new ApiError(StatusCodes.BAD_REQUEST, 'Failed to update product!');
@@ -65,7 +88,7 @@ const deleteProduct = async (id: string): Promise<IProduct | null> => {
 };
 
 export const ProductService = {
-  createProduct,
+  createProductToDB,
   getAllProducts,
   getProductById,
   updateProduct,

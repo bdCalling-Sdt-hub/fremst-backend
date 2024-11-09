@@ -5,7 +5,12 @@ import { StatusCodes } from 'http-status-codes';
 import { ProductService } from './product.service';
 
 const createProduct = catchAsync(async (req: Request, res: Response) => {
-  const result = await ProductService.createProduct(req.body);
+  let data = req.body;
+  if (req.files && 'image' in req.files && req.files.image[0]) {
+    data.image = `/images/${req.files.image[0].filename}`;
+  }
+  console.log;
+  const result = await ProductService.createProductToDB(data);
   sendResponse(res, {
     statusCode: StatusCodes.CREATED,
     success: true,
@@ -36,6 +41,9 @@ const getProductById = catchAsync(async (req: Request, res: Response) => {
 });
 
 const updateProduct = catchAsync(async (req: Request, res: Response) => {
+  if (req.files && 'image' in req.files && req.files.image[0]) {
+    req.body.image = `/images/${req.files.image[0].filename}`;
+  }
   const result = await ProductService.updateProduct(req.params.id, req.body);
   sendResponse(res, {
     statusCode: StatusCodes.OK,

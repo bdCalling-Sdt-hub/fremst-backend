@@ -41,7 +41,7 @@ import { I${capitalizedModuleName}, ${capitalizedModuleName}Model } from './${na
 const ${name}Schema = new Schema<I${capitalizedModuleName}, ${capitalizedModuleName}Model>({
   ${fields.map(field => 
     field.type.includes('array') 
-      ? `${field.name}: [${field.type.split('=>')[1].replace(field.type.split('=>')[1][0], field.type.split('=>')[1][0].toUpperCase())}]` 
+      ? `${field.name}: {type: [${field.type.split('=>')[1].replace(field.type.split('=>')[1][0], field.type.split('=>')[1][0].toUpperCase())}], required: true }` 
       : `${field.name}: ${
           field.type.includes("ref")
             ? `{ type: Schema.Types.ObjectId, ref: '${field.type.split('=>')[1]}', required: true }`
@@ -83,7 +83,7 @@ const getAll${capitalizedModuleName}s = async (search: string): Promise<I${capit
     result = await ${capitalizedModuleName}.find({
       $or: [
         ${fields.map(field => 
-          field.type.includes('ref') 
+          field.type.includes('ref') || field.type.includes('date') || field.type.includes('number') || field.type.includes('boolean')
             ? null 
             : `{ ${field.name}: { $regex: search, $options: 'i' } }`
         ).filter(Boolean).join(',\n        ')}
