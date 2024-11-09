@@ -115,8 +115,8 @@ export const ${capitalizedModuleName}Validation = {
     }),
   }),
   update${capitalizedModuleName}ZodSchema: z.object({
- body: z.object({
-      ${fields.map(field => `${field.name}: z.${field.type.includes('ref')?"string":field.type}({invalid_type_error:"${field.name} should be type ${field.type.includes('ref')?"objectID or string":field.type}"}).optional()`).join(',\n      ')}
+    body: z.object({
+      ${fields.map(field => `${field.name}: z.${field.type}({invalid_type_error:"${field.name} should be type ${field.type}"}).optional()`).join(',\n      ')}
     }),
   }),
 };
