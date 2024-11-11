@@ -55,6 +55,12 @@ const productSchema = new Schema<IProduct, ProductModel>(
       type: String,
       required: true,
     },
+    question: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Question',
+      },
+    ],
   },
   { timestamps: true }
 );

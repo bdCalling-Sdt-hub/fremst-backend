@@ -14,6 +14,7 @@ export type IProduct = {
   inspectionHistory?: Array<string>;
   companyName: string;
   contactPerson: string;
+  question: Array<Types.ObjectId>;
 };
 
 export type ProductModel = Model<IProduct>;
