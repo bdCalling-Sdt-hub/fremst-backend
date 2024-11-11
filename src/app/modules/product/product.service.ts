@@ -21,29 +21,34 @@ const createProductToDB = async (payload: any): Promise<IProduct> => {
   return result;
 };
 
-const getAllProducts = async (search: string): Promise<IProduct[]> => {
-  let result: any;
-  if (search !== '') {
-    result = await Product.find({
-      $or: [
-        { sku: { $regex: search, $options: 'i' } },
-        { name: { $regex: search, $options: 'i' } },
-        { brand: { $regex: search, $options: 'i' } },
-        { type: { $regex: search, $options: 'i' } },
-        { serialNo: { $regex: search, $options: 'i' } },
-        { enStandard: { $regex: search, $options: 'i' } },
-        { inspectionInterval: { $regex: search, $options: 'i' } },
-        { latestInspectionDate: { $regex: search, $options: 'i' } },
-        { inspectionHistory: { $regex: search, $options: 'i' } },
-        { companyName: { $regex: search, $options: 'i' } },
-        { contactPerson: { $regex: search, $options: 'i' } },
-      ],
-    });
-    return result;
-  } else {
-    result = await Product.find();
+const getAllProducts = async (
+  search: string,
+  page: number | null,
+  limit: number | null
+): Promise<IProduct[]> => {
+  const query = search
+    ? {
+        $or: [
+          { sku: { $regex: search, $options: 'i' } },
+          { name: { $regex: search, $options: 'i' } },
+          { brand: { $regex: search, $options: 'i' } },
+          { type: { $regex: search, $options: 'i' } },
+          { serialNo: { $regex: search, $options: 'i' } },
+          { enStandard: { $regex: search, $options: 'i' } },
+          { inspectionInterval: { $regex: search, $options: 'i' } },
+          { latestInspectionDate: { $regex: search, $options: 'i' } },
+          { inspectionHistory: { $regex: search, $options: 'i' } },
+          { companyName: { $regex: search, $options: 'i' } },
+          { contactPerson: { $regex: search, $options: 'i' } },
+        ],
+      }
+    : {};
+  let queryBuilder = Product.find(query);
+  if (page && limit) {
+    queryBuilder = queryBuilder.skip((page - 1) * limit).limit(limit);
   }
-  return result;
+
+  return await queryBuilder;
 };
 
 const getProductById = async (id: string): Promise<IProduct | null> => {

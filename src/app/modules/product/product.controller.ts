@@ -21,7 +21,13 @@ const createProduct = catchAsync(async (req: Request, res: Response) => {
 
 const getAllProducts = catchAsync(async (req: Request, res: Response) => {
   const search: any = req.query.search || '';
-  const result = await ProductService.getAllProducts(search as string);
+  const page = req.query.page || null;
+  const limit = req.query.limit || null;
+  const result = await ProductService.getAllProducts(
+    search as string,
+    page as number | null,
+    limit as number | null
+  );
   sendResponse(res, {
     statusCode: StatusCodes.OK,
     success: true,
