@@ -93,10 +93,7 @@ const generateServiceTemplate = (name, capitalizedModuleName, fields) => {
   const generateSearchFields = fields => {
     return fields
       .map(field => {
-        if (field.type.includes('ref') || 
-            field.type.includes('date') || 
-            field.type.includes('number') || 
-            field.type.includes('boolean')) {
+        if (!field.type.includes('string') && !field.type === 'string') {
           return null;
         }
         return `{ ${field.name}: { $regex: search, $options: 'i' } }`;
