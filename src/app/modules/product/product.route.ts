@@ -2,8 +2,6 @@ import express from 'express';
 import { ProductController } from './product.controller';
 import { USER_ROLES } from '../../../enums/user';
 import auth from '../../middlewares/auth';
-import validateRequest from '../../middlewares/validateRequest';
-import { ProductValidation } from './product.validation';
 import fileUploadHandler from '../../middlewares/fileUploadHandler';
 
 const router = express.Router();

@@ -20,7 +20,6 @@ const getAllCustomers = async (search: string): Promise<ICustomer[]> => {
         { companyPhone: { $regex: search, $options: 'i' } },
         { contactPerson: { $regex: search, $options: 'i' } },
         { email: { $regex: search, $options: 'i' } },
-        { phone: { $regex: search, $options: 'i' } },
         { address: { $regex: search, $options: 'i' } },
       ],
     });
