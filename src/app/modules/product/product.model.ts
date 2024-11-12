@@ -65,4 +65,15 @@ const productSchema = new Schema<IProduct, ProductModel>(
   { timestamps: true }
 );
 
+productSchema.pre('save', async function (next) {
+  const isExist = await Product.findOne({
+    $or: [{ sku: this.sku }, { serialNo: this.serialNo }],
+  });
+  if (isExist) {
+    throw new Error('Product already exist with this sku or serialNo!');
+  }
+
+  next();
+});
+
 export const Product = model<IProduct, ProductModel>('Product', productSchema);
