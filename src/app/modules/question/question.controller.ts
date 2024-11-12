@@ -14,16 +14,23 @@ const createQuestion = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const getAllQuestions = catchAsync(async (req: Request, res: Response) => {
-  const search: any = req.query.search || '';
-  const result = await QuestionService.getAllQuestions(search as string);
-  sendResponse(res, {
-    statusCode: StatusCodes.OK,
-    success: true,
-    message: 'Questions fetched successfully',
-    data: result,
-  });
-});
+const getAllQuestionsOfAProduct = catchAsync(
+  async (req: Request, res: Response) => {
+    const search: any = req.query.search || '';
+    const productID: string = req.params.productID;
+    if (!productID) throw new Error('Product id is required');
+    const result = await QuestionService.getAllQuestions(
+      search as string,
+      productID as string
+    );
+    sendResponse(res, {
+      statusCode: StatusCodes.OK,
+      success: true,
+      message: 'Questions fetched successfully',
+      data: result,
+    });
+  }
+);
 
 const getQuestionById = catchAsync(async (req: Request, res: Response) => {
   const result = await QuestionService.getQuestionById(req.params.id);
@@ -57,7 +64,7 @@ const deleteQuestion = catchAsync(async (req: Request, res: Response) => {
 
 export const QuestionController = {
   createQuestion,
-  getAllQuestions,
+  getAllQuestionsOfAProduct,
   getQuestionById,
   updateQuestion,
   deleteQuestion,

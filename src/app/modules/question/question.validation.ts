@@ -2,6 +2,10 @@ import { z } from 'zod';
 
 const createQuestionZodSchema = z.object({
   body: z.object({
+    category: z.string({
+      required_error: 'questionCategory is required',
+      invalid_type_error: 'questionCategory should be type objectID or string',
+    }),
     product: z.string({
       required_error: 'product is required',
       invalid_type_error: 'product should be type objectID or string',
@@ -10,30 +14,28 @@ const createQuestionZodSchema = z.object({
       required_error: 'question is required',
       invalid_type_error: 'question should be type string',
     }),
-    answer: z.string({
-      required_error: 'answer is required',
-      invalid_type_error: 'answer should be type string',
-    }),
-    isYes: z.boolean({
-      required_error: 'isYes is required',
-      invalid_type_error: 'isYes should be type boolean',
+    isComment: z.boolean({
+      required_error: 'isComment is required',
+      invalid_type_error: 'isComment should be type boolean',
     }),
   }),
 });
 
 const updateQuestionZodSchema = z.object({
   body: z.object({
+    category: z
+      .string({ invalid_type_error: 'questionCategory should be type string' })
+      .optional(),
     product: z
-      .string({ invalid_type_error: 'product should be type ref=>Product' })
+      .string({ invalid_type_error: 'product should be type string' })
       .optional(),
     question: z
       .string({ invalid_type_error: 'question should be type string' })
       .optional(),
-    answer: z
-      .string({ invalid_type_error: 'answer should be type string' })
-      .optional(),
-    isYes: z
-      .boolean({ invalid_type_error: 'isYes should be type boolean' })
+    isComment: z
+      .boolean({
+        invalid_type_error: 'isComment should be type boolean',
+      })
       .optional(),
   }),
 });

@@ -21,18 +21,19 @@ const createQuestion = async (payload: IQuestion): Promise<IQuestion> => {
   return result;
 };
 
-const getAllQuestions = async (search: string): Promise<IQuestion[]> => {
+const getAllQuestions = async (
+  search: string,
+  productID: string
+): Promise<IQuestion[]> => {
   let result: any;
   if (search !== '') {
     result = await Question.find({
-      $or: [
-        { question: { $regex: search, $options: 'i' } },
-        { answer: { $regex: search, $options: 'i' } },
-      ],
+      product: productID,
+      $or: [{ question: { $regex: search, $options: 'i' } }],
     });
     return result;
   } else {
-    result = await Question.find();
+    result = await Question.find({ product: productID });
   }
   return result;
 };

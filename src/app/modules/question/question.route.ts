@@ -9,21 +9,24 @@ const router = express.Router();
 
 router.post(
   '/create',
-  auth(USER_ROLES.ADMIN),
+  auth(USER_ROLES.ADMIN, USER_ROLES.SUPERADMIN),
   validateRequest(QuestionValidation.createQuestionZodSchema),
   QuestionController.createQuestion
 );
-router.get('/', QuestionController.getAllQuestions);
+router.get(
+  '/products/:productID',
+  QuestionController.getAllQuestionsOfAProduct
+);
 router.get('/:id', QuestionController.getQuestionById);
 router.patch(
   '/:id',
-  auth(USER_ROLES.ADMIN),
+  auth(USER_ROLES.ADMIN, USER_ROLES.SUPERADMIN),
   validateRequest(QuestionValidation.updateQuestionZodSchema),
   QuestionController.updateQuestion
 );
 router.delete(
   '/:id',
-  auth(USER_ROLES.ADMIN),
+  auth(USER_ROLES.ADMIN, USER_ROLES.SUPERADMIN),
   QuestionController.deleteQuestion
 );
 
