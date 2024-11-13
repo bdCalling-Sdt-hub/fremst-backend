@@ -3,6 +3,7 @@ import ApiError from '../../../errors/ApiError';
 import { Question } from './question.model';
 import { IQuestion } from './question.interface';
 import { Product } from '../product/product.model';
+import { Step } from '../step/step.model';
 
 const createQuestion = async (payload: IQuestion): Promise<IQuestion> => {
   const isExistProduct = await Product.findOne({ _id: payload.product });
@@ -22,20 +23,19 @@ const createQuestion = async (payload: IQuestion): Promise<IQuestion> => {
 };
 
 const getAllQuestions = async (
-  search: string,
-  productID: string
+  productID?: string,
+  stepName?: string
 ): Promise<IQuestion[]> => {
-  let result: any;
-  if (search !== '') {
-    result = await Question.find({
-      product: productID,
-      $or: [{ question: { $regex: search, $options: 'i' } }],
-    });
-    return result;
-  } else {
-    result = await Question.find({ product: productID });
+  const isExistStep = await Step.findOne({
+    product: productID,
+    name: stepName,
+  });
+  if (!isExistStep) {
+    throw new ApiError(StatusCodes.BAD_REQUEST, 'Step not found!');
   }
-  return result;
+  const allQuestions = await Question.find({ stepID: isExistStep._id });
+
+  return allQuestions;
 };
 
 const getQuestionById = async (id: string): Promise<IQuestion | null> => {
