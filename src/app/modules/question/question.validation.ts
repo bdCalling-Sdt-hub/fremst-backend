@@ -2,9 +2,9 @@ import { z } from 'zod';
 
 const createQuestionZodSchema = z.object({
   body: z.object({
-    category: z.string({
-      required_error: 'questionCategory is required',
-      invalid_type_error: 'questionCategory should be type objectID or string',
+    stepID: z.string({
+      required_error: 'stepID is required',
+      invalid_type_error: 'stepID should be type objectID or string',
     }),
     product: z.string({
       required_error: 'product is required',
@@ -23,11 +23,11 @@ const createQuestionZodSchema = z.object({
 
 const updateQuestionZodSchema = z.object({
   body: z.object({
-    category: z
-      .string({ invalid_type_error: 'questionCategory should be type string' })
+    stepID: z
+      .string({ invalid_type_error: 'stepID should be type string' })
       .optional(),
     product: z
-      .string({ invalid_type_error: 'product should be type string' })
+      .string({ invalid_type_error: 'stepID should be type string' })
       .optional(),
     question: z
       .string({ invalid_type_error: 'question should be type string' })

@@ -3,13 +3,13 @@ import { IQuestion, QuestionModel } from './question.interface';
 import { StatusCodes } from 'http-status-codes';
 import { Product } from '../product/product.model';
 import ApiError from '../../../errors/ApiError';
-import { QuestionCategory } from '../questionCategory/questionCategory.model';
+import { Step } from '../step/step.model';
 
 const questionSchema = new Schema<IQuestion, QuestionModel>(
   {
-    category: {
+    stepID: {
       type: Schema.Types.ObjectId,
-      ref: 'QuestionCategory',
+      ref: 'Step',
       required: true,
     },
     product: { type: Schema.Types.ObjectId, ref: 'Product', required: true },
@@ -24,11 +24,11 @@ questionSchema.pre('save', async function (next) {
   if (!isExistProduct) {
     throw new ApiError(StatusCodes.BAD_REQUEST, 'Product not found!');
   }
-  const isExistCategory = await QuestionCategory.findOne({
-    _id: this.category,
+  const isExistStep = await Step.findOne({
+    _id: this.stepID,
   });
-  if (!isExistCategory) {
-    throw new ApiError(StatusCodes.BAD_REQUEST, 'QuestionCategory not found!');
+  if (!isExistStep) {
+    throw new ApiError(StatusCodes.BAD_REQUEST, 'step not found!');
   }
   next();
 });

@@ -4,7 +4,7 @@ import { UserRoutes } from '../app/modules/user/user.route';
 import { CustomerRoutes } from '../app/modules/customer/customer.route';
 import { ProductRoutes } from '../app/modules/product/product.route';
 import { QuestionRoutes } from '../app/modules/question/question.route';
-import { QuestionCategoryRoutes } from '../app/modules/questionCategory/questionCategory.route';
+import { StepRoutes } from '../app/modules/step/step.route';
 const router = express.Router();
 
 const apiRoutes = [
@@ -25,8 +25,8 @@ const apiRoutes = [
     route: QuestionRoutes,
   },
   {
-    path: '/question/category',
-    route: QuestionCategoryRoutes,
+    path: '/question/steps',
+    route: StepRoutes,
   },
   {
     path: '/product',

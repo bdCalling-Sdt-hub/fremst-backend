@@ -3,7 +3,7 @@ import { Model, Types } from 'mongoose';
 export type IQuestion = {
   product: Types.ObjectId;
   question: string;
-  category: Types.ObjectId;
+  stepID: Types.ObjectId;
   isComment: boolean;
 };
 
