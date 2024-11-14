@@ -3,9 +3,20 @@ import catchAsync from '../../../shared/catchAsync';
 import sendResponse from '../../../shared/sendResponse';
 import { StatusCodes } from 'http-status-codes';
 import { StepService } from './step.service';
+import ApiError from '../../../errors/ApiError';
 
 const createStep = catchAsync(async (req: Request, res: Response) => {
-  const result = await StepService.createStep(req.body);
+  let stepImage = null;
+  if (req.files && 'stepImages' in req.files && req.files.stepImages[0]) {
+    stepImage = `/stepImages/${req.files.stepImages[0].filename}`;
+  } else {
+    throw new ApiError(StatusCodes.BAD_REQUEST, 'Step image is required');
+  }
+  const data = {
+    ...req.body,
+    stepImage,
+  };
+  const result = await StepService.createStep(data);
   sendResponse(res, {
     statusCode: StatusCodes.CREATED,
     success: true,
@@ -46,6 +57,9 @@ const getStepById = catchAsync(async (req: Request, res: Response) => {
 });
 
 const updateStep = catchAsync(async (req: Request, res: Response) => {
+  if (req.files && 'stepImage' in req.files && req.files.stepImage[0]) {
+    req.body.stepImage = `/stepImages/${req.files.stepImage[0].filename}`;
+  }
   const result = await StepService.updateStep(req.params.id, req.body);
   sendResponse(res, {
     statusCode: StatusCodes.OK,

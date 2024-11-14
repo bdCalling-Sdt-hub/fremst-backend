@@ -4,13 +4,14 @@ import { USER_ROLES } from '../../../enums/user';
 import auth from '../../middlewares/auth';
 import validateRequest from '../../middlewares/validateRequest';
 import { StepValidation } from './step.validation';
+import fileUploadHandler from '../../middlewares/fileUploadHandler';
 
 const router = express.Router();
 
 router.post(
   '/create',
   auth(USER_ROLES.ADMIN, USER_ROLES.SUPERADMIN),
-  validateRequest(StepValidation.createStepZodSchema),
+  fileUploadHandler(),
   StepController.createStep
 );
 router.get('/product/:productID', StepController.getAllStepsByProductID);
@@ -18,7 +19,7 @@ router.get('/:id', StepController.getStepById);
 router.patch(
   '/:id',
   auth(USER_ROLES.ADMIN, USER_ROLES.SUPERADMIN),
-  validateRequest(StepValidation.updateStepZodSchema),
+  fileUploadHandler(),
   StepController.updateStep
 );
 router.delete(

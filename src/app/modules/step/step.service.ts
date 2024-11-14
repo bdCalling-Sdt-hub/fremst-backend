@@ -2,8 +2,10 @@ import { StatusCodes } from 'http-status-codes';
 import ApiError from '../../../errors/ApiError';
 import { Step } from './step.model';
 import { IStep } from './step.interface';
+import { StepValidation } from './step.validation';
 
 const createStep = async (payload: IStep): Promise<IStep> => {
+  await StepValidation.createStepZodSchema.parseAsync(payload);
   const result = await Step.create(payload);
   if (!result) {
     throw new ApiError(StatusCodes.BAD_REQUEST, 'Failed to create step!');
@@ -47,6 +49,7 @@ const updateStep = async (
   id: string,
   payload: IStep
 ): Promise<IStep | null> => {
+  await StepValidation.updateStepZodSchema.parseAsync(payload);
   const result = await Step.findByIdAndUpdate(id, payload, { new: true });
   if (!result) {
     throw new ApiError(StatusCodes.BAD_REQUEST, 'Failed to update step!');
