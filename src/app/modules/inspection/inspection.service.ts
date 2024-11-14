@@ -3,26 +3,23 @@ import ApiError from '../../../errors/ApiError';
 import { Inspection } from './inspection.model';
 import { IInspection } from './inspection.interface';
 
-const createInspection = async (payload: IInspection): Promise<IInspection> => {
+const createInspection = async (payload: IInspection): Promise<any> => {
+  console.log(payload);
   const result = await Inspection.create(payload);
   if (!result) {
     throw new ApiError(StatusCodes.BAD_REQUEST, 'Failed to create inspection!');
   }
-  return result;
+  return { ...payload };
 };
 
 const getAllInspections = async (
-  search: string,
   page: number | null,
-  limit: number | null
+  limit: number | null,
+  queryFields: any
 ): Promise<IInspection[]> => {
-  const query = search
+  const query = queryFields
     ? {
-        $or: [
-          { product: { $regex: search, $options: 'i' } },
-          { customer: { $regex: search, $options: 'i' } },
-          { steps: { $regex: search, $options: 'i' } },
-        ],
+        ...queryFields,
       }
     : {};
   let queryBuilder = Inspection.find(query);

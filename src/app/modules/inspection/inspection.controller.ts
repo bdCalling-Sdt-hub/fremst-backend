@@ -15,14 +15,13 @@ const createInspection = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getAllInspections = catchAsync(async (req: Request, res: Response) => {
-  const search: any = req.query.search || '';
   const page = req.query.page || null;
   const limit = req.query.limit || null;
-
+  const query = req.query;
   const result = await InspectionService.getAllInspections(
-    search as string,
     page as number | null,
-    limit as number | null
+    limit as number | null,
+    query
   );
   sendResponse(res, {
     statusCode: StatusCodes.OK,

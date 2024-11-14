@@ -5,7 +5,18 @@ const inspectionSchema = new Schema<IInspection, InspectionModel>(
   {
     product: { type: Schema.Types.ObjectId, ref: 'Product', required: true },
     customer: { type: Schema.Types.ObjectId, ref: 'Customer', required: true },
-    steps: [{ type: Schema.Types.ObjectId, ref: 'Step' }],
+    step: [
+      {
+        name: { type: String, required: true },
+        answers: [
+          {
+            question: { type: String, required: true },
+            comment: { type: String, required: false },
+            isYes: { type: Boolean, required: true },
+          },
+        ],
+      },
+    ],
   },
   { timestamps: true }
 );
