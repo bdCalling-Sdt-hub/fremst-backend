@@ -3,6 +3,7 @@ import ApiError from '../../../errors/ApiError';
 import { Step } from './step.model';
 import { IStep } from './step.interface';
 import { StepValidation } from './step.validation';
+import unlinkFile from '../../../shared/unlinkFile';
 
 const createStep = async (payload: IStep): Promise<IStep> => {
   await StepValidation.createStepZodSchema.parseAsync(payload);
@@ -50,6 +51,9 @@ const updateStep = async (
   payload: IStep
 ): Promise<IStep | null> => {
   await StepValidation.updateStepZodSchema.parseAsync(payload);
+  if (payload.stepImage && payload.stepImage !== '/stepImages/default.png') {
+    await unlinkFile(payload.stepImage);
+  }
   const result = await Step.findByIdAndUpdate(id, payload, { new: true });
   if (!result) {
     throw new ApiError(StatusCodes.BAD_REQUEST, 'Failed to update step!');
@@ -58,6 +62,13 @@ const updateStep = async (
 };
 
 const deleteStep = async (id: string): Promise<IStep | null> => {
+  const isExist = await Step.findById(id);
+  if (!isExist) {
+    throw new ApiError(StatusCodes.BAD_REQUEST, 'Step not found!');
+  }
+  if (isExist.stepImage) {
+    await unlinkFile(isExist.stepImage);
+  }
   const result = await Step.findByIdAndDelete(id);
   if (!result) {
     throw new ApiError(StatusCodes.BAD_REQUEST, 'Failed to delete step!');
