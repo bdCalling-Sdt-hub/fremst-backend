@@ -2,4 +2,4 @@ node_modules
 .env
 
 /winston
-nexpress.config.js
+sparkpress.config.js
