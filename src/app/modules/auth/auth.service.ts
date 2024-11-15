@@ -20,6 +20,12 @@ import { User } from '../user/user.model';
 //login
 const loginUserFromDB = async (payload: ILoginData) => {
   const { email, password } = payload;
+  if (password.length < 8) {
+    throw new ApiError(
+      StatusCodes.BAD_REQUEST,
+      'Password must be at least 8 characters'
+    );
+  }
   const isExistUser = await User.findOne({ email }).select('+password');
   if (!isExistUser) {
     throw new ApiError(StatusCodes.BAD_REQUEST, "User doesn't exist!");

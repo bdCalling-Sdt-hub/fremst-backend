@@ -11,6 +11,12 @@ import { User } from './user.model';
 
 const createUserToDB = async (payload: Partial<IUser>): Promise<IUser> => {
   let createUser;
+  if (payload?.password?.length! < 8) {
+    throw new ApiError(
+      StatusCodes.BAD_REQUEST,
+      'Password must be at least 8 characters'
+    );
+  }
   if (payload.role === USER_ROLES.SUPERADMIN) {
     const isExistAdmin = await User.findOne({ role: USER_ROLES.SUPERADMIN });
     if (isExistAdmin) {
