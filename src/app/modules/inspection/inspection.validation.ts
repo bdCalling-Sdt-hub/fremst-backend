@@ -10,6 +10,18 @@ const createInspectionZodSchema = z.object({
       required_error: 'customer is required',
       invalid_type_error: 'customer should be type objectID or string',
     }),
+    sku: z.string({
+      required_error: 'sku is required',
+      invalid_type_error: 'sku should be type string',
+    }),
+    enStandard: z.string({
+      required_error: 'enStandard is required',
+      invalid_type_error: 'enStandard should be type string',
+    }),
+    serialNo: z.string({
+      required_error: 'serialNo is required',
+      invalid_type_error: 'serialNo should be type string',
+    }),
     step: z.array(
       z.object({
         name: z.string({
@@ -46,6 +58,19 @@ const updateInspectionZodSchema = z.object({
     customer: z
       .string({
         invalid_type_error: 'customer should be type objectID or string',
+      })
+      .optional(),
+    sku: z
+      .string({ invalid_type_error: 'sku should be type string' })
+      .optional(),
+    enStandard: z
+      .string({
+        invalid_type_error: 'enStandard should be type string',
+      })
+      .optional(),
+    serialNo: z
+      .string({
+        invalid_type_error: 'serialNo should be type string',
       })
       .optional(),
     step: z

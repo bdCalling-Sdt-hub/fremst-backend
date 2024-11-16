@@ -3,10 +3,6 @@ import { IProduct, ProductModel } from './product.interface';
 
 const productSchema = new Schema<IProduct, ProductModel>(
   {
-    sku: {
-      type: String,
-      required: true,
-    },
     image: {
       type: String,
       required: true,
@@ -23,14 +19,7 @@ const productSchema = new Schema<IProduct, ProductModel>(
       type: String,
       required: true,
     },
-    serialNo: {
-      type: String,
-      required: true,
-    },
-    enStandard: {
-      type: String,
-      required: true,
-    },
+
     inspectionInterval: {
       type: String,
       required: true,
@@ -66,13 +55,6 @@ const productSchema = new Schema<IProduct, ProductModel>(
 );
 
 productSchema.pre('save', async function (next) {
-  const isExist = await Product.findOne({
-    $or: [{ sku: this.sku }, { serialNo: this.serialNo }],
-  });
-  if (isExist) {
-    throw new Error('Product already exist with this sku or serialNo!');
-  }
-
   next();
 });
 

@@ -1,8 +1,11 @@
 import { Model, Types } from 'mongoose';
 
 export type IInspection = {
+  sku: string;
   product: Types.ObjectId;
   customer: Types.ObjectId;
+  enStandard: string;
+  serialNo: string;
   step: [
     {
       name: string;

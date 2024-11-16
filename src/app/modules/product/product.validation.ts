@@ -1,10 +1,6 @@
 import { z } from 'zod';
 
 const createProductZodSchema = z.object({
-  sku: z.string({
-    required_error: 'sku is required',
-    invalid_type_error: 'sku should be type string',
-  }),
   name: z.string({
     required_error: 'name is required',
     invalid_type_error: 'name should be type string',
@@ -17,14 +13,7 @@ const createProductZodSchema = z.object({
     required_error: 'type is required',
     invalid_type_error: 'type should be type string',
   }),
-  serialNo: z.string({
-    required_error: 'serialNo is required',
-    invalid_type_error: 'serialNo should be type string',
-  }),
-  enStandard: z.string({
-    required_error: 'enStandard is required',
-    invalid_type_error: 'enStandard should be type string',
-  }),
+
   inspectionInterval: z.string({
     required_error: 'inspectionInterval is required',
     invalid_type_error: 'inspectionInterval should be type string',
@@ -53,7 +42,6 @@ const createProductZodSchema = z.object({
 });
 
 const updateProductZodSchema = z.object({
-  sku: z.string({ invalid_type_error: 'sku should be type string' }).optional(),
   image: z
     .string({ invalid_type_error: 'image should be type string' })
     .optional(),
@@ -66,12 +54,7 @@ const updateProductZodSchema = z.object({
   type: z
     .string({ invalid_type_error: 'type should be type string' })
     .optional(),
-  serialNo: z
-    .string({ invalid_type_error: 'serialNo should be type string' })
-    .optional(),
-  enStandard: z
-    .string({ invalid_type_error: 'enStandard should be type string' })
-    .optional(),
+
   inspectionInterval: z
     .string({
       invalid_type_error: 'inspectionInterval should be type string',

@@ -5,6 +5,7 @@ import app from './app';
 import config from './config';
 import { socketHelper } from './helpers/socketHelper';
 import { errorLogger, logger } from './shared/logger';
+import { cronJobs } from './app/modules/cron';
 
 //uncaught exception
 process.on('uncaughtException', error => {
@@ -26,7 +27,7 @@ async function main() {
         colors.yellow(`♻️  Application listening on port:${config.port}`)
       );
     });
-
+    cronJobs();
     //socket
     const io = new Server(server, {
       pingTimeout: 60000,
