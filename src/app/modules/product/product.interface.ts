@@ -6,7 +6,8 @@ export type IProduct = {
   image: string;
   type: string;
   inspectionInterval: string;
-  latestInspectionDate: string;
+  latestInspectionDate?: string;
+  nextInspectionDate: string;
   isActive: boolean;
   inspectionHistory?: Array<string>;
   companyName: string;

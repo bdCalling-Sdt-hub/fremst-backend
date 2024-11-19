@@ -26,6 +26,10 @@ const productSchema = new Schema<IProduct, ProductModel>(
     },
     latestInspectionDate: {
       type: String,
+      required: false,
+    },
+    nextInspectionDate: {
+      type: String,
       required: true,
     },
     isActive: {

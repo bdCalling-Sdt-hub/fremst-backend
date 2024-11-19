@@ -27,6 +27,11 @@ router
   );
 router.get('/admins', auth(USER_ROLES.SUPERADMIN), UserController.getAdmins);
 router.get(
+  '/home',
+  auth(USER_ROLES.ADMIN, USER_ROLES.SUPERADMIN),
+  UserController.getHomeData
+);
+router.get(
   '/admins/:id',
   auth(USER_ROLES.SUPERADMIN),
   UserController.getAdminByID

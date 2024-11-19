@@ -5,7 +5,7 @@ import app from './app';
 import config from './config';
 import { socketHelper } from './helpers/socketHelper';
 import { errorLogger, logger } from './shared/logger';
-import { cronJobs } from './app/modules/cron';
+import { cronJobs } from './app/cron';
 
 //uncaught exception
 process.on('uncaughtException', error => {
@@ -36,7 +36,7 @@ async function main() {
       },
     });
     socketHelper.socket(io);
-    //@ts-ignore
+    // @ts-ignore
     global.io = io;
   } catch (error) {
     errorLogger.error(colors.red('🤢 Failed to connect Database'));

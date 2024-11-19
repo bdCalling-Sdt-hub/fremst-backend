@@ -85,8 +85,21 @@ const deleteAdminByID = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+
+const getHomeData = catchAsync(async (req: Request, res: Response) => {
+  const result = await UserService.getHomeData();
+
+  sendResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: 'Home data fetched successfully',
+    data: result,
+  });
+});
+
 export const UserController = {
   createUser,
+  getHomeData,
   getUserProfile,
   updateProfile,
   getAdminByID,

@@ -4,20 +4,47 @@ import { Product } from './product.model';
 import { IProduct } from './product.interface';
 import { ProductValidation } from './product.validation';
 
-const createProductToDB = async (payload: any): Promise<IProduct> => {
-  // console.log({
-  //   ...payload,
-  //   isActive: payload.isActive.includes('true') ? true : false,
-  //   inspectionHistory: JSON.parse(payload.inspectionHistory.replace(/'/g, '"')),
-  // });
+const createProductToDB = async (
+  payload: Partial<IProduct>
+): Promise<IProduct> => {
+  // Validate payload
   await ProductValidation.createProductZodSchema.parseAsync({
     ...payload,
+    // @ts-ignore
     isActive: payload.isActive === 'true' ? true : false,
   });
-  const result = await Product.create(payload);
+  if (payload.latestInspectionDate) {
+    payload.latestInspectionDate = new Date(
+      payload.latestInspectionDate
+    ).toISOString();
+  } else {
+    payload.latestInspectionDate = new Date().toISOString();
+  }
+  // Calculate next inspection date
+  const inspectionInterval = payload.inspectionInterval;
+  if (
+    inspectionInterval !== 'SIX_MONTHS' &&
+    inspectionInterval !== 'TWELVE_MONTHS'
+  ) {
+    throw new ApiError(StatusCodes.BAD_REQUEST, 'Invalid inspectionInterval!');
+  }
+
+  const nextInspectionDate = new Date();
+  nextInspectionDate.setMonth(
+    nextInspectionDate.getMonth() +
+      (inspectionInterval === 'SIX_MONTHS' ? 6 : 12)
+  );
+
+  const finalPayload = {
+    ...payload,
+    nextInspectionDate: nextInspectionDate.toISOString(),
+  };
+
+  const result = await Product.create(finalPayload);
   if (!result) {
     throw new ApiError(StatusCodes.BAD_REQUEST, 'Failed to create product!');
   }
+
   return result;
 };
 
