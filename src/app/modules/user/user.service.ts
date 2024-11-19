@@ -147,6 +147,7 @@ const getHomeData = async (): Promise<any> => {
           : false;
 
         return {
+          id: product._id,
           latestInspectionDate: product.latestInspectionDate || null,
           nextInspectionDate: product.nextInspectionDate || null,
           inspectionInterval: product.inspectionInterval || null,
