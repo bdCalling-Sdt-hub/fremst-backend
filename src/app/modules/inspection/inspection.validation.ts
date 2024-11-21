@@ -46,6 +46,27 @@ const createInspectionZodSchema = z.object({
         ),
       })
     ),
+    summery: z.string({
+      required_error: 'summery is required',
+      invalid_type_error: 'summery should be type string',
+    }),
+    isApproved: z.boolean({
+      required_error: 'isApproved is required',
+      invalid_type_error: 'isApproved should be type boolean',
+    }),
+    inspectionDate: z.string({
+      required_error: 'inspectionDate is required',
+      invalid_type_error: 'inspectionDate should be type string',
+    }),
+    nextInspectionDate: z.string({
+      required_error: 'nextInspectionDate is required',
+      invalid_type_error: 'nextInspectionDate should be type string',
+    }),
+    isActive: z
+      .boolean({
+        invalid_type_error: 'isActive should be type boolean',
+      })
+      .optional(),
   }),
 });
 const updateInspectionZodSchema = z.object({
@@ -94,6 +115,25 @@ const updateInspectionZodSchema = z.object({
           ),
         })
       )
+      .optional(),
+    summery: z
+      .string({ invalid_type_error: 'summery should be type string' })
+      .optional(),
+    isApproved: z
+      .boolean({ invalid_type_error: 'isApproved should be type boolean' })
+      .optional(),
+    inspectionDate: z
+      .string({ invalid_type_error: 'inspectionDate should be type string' })
+      .optional(),
+    nextInspectionDate: z
+      .string({
+        invalid_type_error: 'nextInspectionDate should be type string',
+      })
+      .optional(),
+    isActive: z
+      .boolean({
+        invalid_type_error: 'isActive should be type boolean',
+      })
       .optional(),
   }),
 });

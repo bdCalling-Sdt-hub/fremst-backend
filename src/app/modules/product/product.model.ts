@@ -19,23 +19,6 @@ const productSchema = new Schema<IProduct, ProductModel>(
       type: String,
       required: true,
     },
-
-    inspectionInterval: {
-      type: String,
-      required: true,
-    },
-    latestInspectionDate: {
-      type: String,
-      required: false,
-    },
-    nextInspectionDate: {
-      type: String,
-      required: true,
-    },
-    isActive: {
-      type: Boolean,
-      required: true,
-    },
     inspectionHistory: {
       type: [String],
       required: false,

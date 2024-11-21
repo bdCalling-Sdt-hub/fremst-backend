@@ -3,9 +3,28 @@ import catchAsync from '../../../shared/catchAsync';
 import sendResponse from '../../../shared/sendResponse';
 import { StatusCodes } from 'http-status-codes';
 import { InspectionService } from './inspection.service';
+import { IInspection } from './inspection.interface';
 
 const createInspection = catchAsync(async (req: Request, res: Response) => {
-  const result = await InspectionService.createInspection(req.body);
+  let finalData: any;
+  const data = await JSON.parse(req.body.data);
+  if (
+    req.files &&
+    'inspectionImage' in req.files &&
+    req.files.inspectionImage[0]
+  ) {
+    const image = `/images/${req.files.inspectionImage[0].filename}`;
+    finalData = {
+      productImage: image as string,
+      ...data,
+    };
+  } else {
+    throw new Error('inspectionImage is required');
+  }
+
+  const result = await InspectionService.createInspection(
+    finalData as IInspection
+  );
   sendResponse(res, {
     statusCode: StatusCodes.CREATED,
     success: true,

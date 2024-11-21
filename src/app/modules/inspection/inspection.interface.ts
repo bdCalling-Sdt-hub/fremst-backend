@@ -18,6 +18,12 @@ export type IInspection = {
       ];
     }
   ];
+  summery: string;
+  isApproved: boolean;
+  isActive: boolean;
+  productImage: string;
+  inspectionDate: string;
+  nextInspectionDate: string;
 };
 
 export type InspectionModel = Model<IInspection>;

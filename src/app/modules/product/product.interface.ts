@@ -5,10 +5,6 @@ export type IProduct = {
   brand: string;
   image: string;
   type: string;
-  inspectionInterval: string;
-  latestInspectionDate?: string;
-  nextInspectionDate: string;
-  isActive: boolean;
   inspectionHistory?: Array<string>;
   companyName: string;
   contactPerson: string;
