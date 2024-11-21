@@ -1,5 +1,9 @@
 import { Schema, model } from 'mongoose';
 import { IInspection, InspectionModel } from './inspection.interface';
+import ApiError from '../../../errors/ApiError';
+import { StatusCodes } from 'http-status-codes';
+import { Product } from '../product/product.model';
+import { Customer } from '../customer/customer.model';
 
 const inspectionSchema = new Schema<IInspection, InspectionModel>(
   {
@@ -67,6 +71,17 @@ const inspectionSchema = new Schema<IInspection, InspectionModel>(
   },
   { timestamps: true }
 );
+inspectionSchema.pre('save', async function (next) {
+  const isExistProduct = await Product.findOne({ _id: this.product });
+  if (!isExistProduct) {
+    throw new ApiError(StatusCodes.BAD_REQUEST, 'Product not found!');
+  }
+  const isExistCustomer = await Customer.findOne({ _id: this.customer });
+  if (!isExistCustomer) {
+    throw new ApiError(StatusCodes.BAD_REQUEST, 'Customer not found!');
+  }
+  next();
+});
 
 export const Inspection = model<IInspection, InspectionModel>(
   'Inspection',

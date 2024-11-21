@@ -2,9 +2,10 @@ import { StatusCodes } from 'http-status-codes';
 import ApiError from '../../../errors/ApiError';
 import { Inspection } from './inspection.model';
 import { IInspection } from './inspection.interface';
+import { InspectionValidation } from './inspection.validation';
 
 const createInspection = async (payload: IInspection): Promise<any> => {
-  console.log(payload);
+  await InspectionValidation.createInspectionZodSchema.parseAsync(payload);
   const result = await Inspection.create(payload);
   if (!result) {
     throw new ApiError(StatusCodes.BAD_REQUEST, 'Failed to create inspection!');
@@ -43,6 +44,7 @@ const updateInspection = async (
   id: string,
   payload: IInspection
 ): Promise<IInspection | null> => {
+  await InspectionValidation.updateInspectionZodSchema.parseAsync(payload);
   const isExistInspection = await getInspectionById(id);
   if (!isExistInspection) {
     throw new ApiError(StatusCodes.BAD_REQUEST, 'Inspection not found!');
