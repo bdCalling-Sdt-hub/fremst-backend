@@ -65,7 +65,7 @@ const inspectionSchema = new Schema<IInspection, InspectionModel>(
       required: true,
     },
     nextInspectionDate: {
-      type: String,
+      type: Date,
       required: true,
     },
   },

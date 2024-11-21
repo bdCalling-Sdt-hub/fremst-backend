@@ -23,7 +23,7 @@ export type IInspection = {
   isActive: boolean;
   productImage: string;
   inspectionDate: string;
-  nextInspectionDate: string;
+  nextInspectionDate: Date;
 };
 
 export type InspectionModel = Model<IInspection>;

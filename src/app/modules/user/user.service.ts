@@ -10,6 +10,8 @@ import { IUser } from './user.interface';
 import { User } from './user.model';
 import { Customer } from '../customer/customer.model';
 import { Product } from '../product/product.model';
+import { Inspection } from '../inspection/inspection.model';
+import { IInspection } from '../inspection/inspection.interface';
 
 const createUserToDB = async (payload: Partial<IUser>): Promise<IUser> => {
   let createUser;
@@ -110,7 +112,11 @@ const deleteAdminByID = async (id: string): Promise<Partial<IUser>> => {
   return admin;
 };
 
-const getHomeData = async (): Promise<any> => {
+const getHomeData = async (): Promise<{
+  customers: number;
+  products: number;
+  inspections: (IInspection & { delayedDays?: number })[];
+}> => {
   try {
     const [customers, products] = await Promise.all([
       Customer.find(),
@@ -121,80 +127,47 @@ const getHomeData = async (): Promise<any> => {
     const thirtyDaysFromNow = new Date(todaysDate);
     thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 30);
 
-    const inspections = products
-      .filter((product: any) => {
-        const nextInspectionDate = product.nextInspectionDate
-          ? new Date(product.nextInspectionDate)
-          : null;
-
-        // Include products that are either:
-        // 1. Due for inspection in the next 30 days
-        // 2. Already delayed (past due date)
-        return (
-          nextInspectionDate &&
-          ((nextInspectionDate >= todaysDate &&
-            nextInspectionDate <= thirtyDaysFromNow) ||
-            nextInspectionDate < todaysDate)
-        );
+    // Find inspections within the next 30 days, including those that are delayed
+    const rawInspections = await Inspection.find({
+      isActive: true,
+      nextInspectionDate: {
+        $lte: thirtyDaysFromNow,
+      },
+    })
+      .populate({
+        path: 'product customer',
+        select: 'name', // Only select necessary fields
       })
-      .map(product => {
-        const nextInspectionDate = product.nextInspectionDate
-          ? new Date(product.nextInspectionDate)
-          : null;
+      .lean();
 
-        const isDelayed = nextInspectionDate
-          ? nextInspectionDate < todaysDate
-          : false;
+    // Process inspections to add delayedDays
+    const inspections = rawInspections.map(inspection => {
+      // Calculate delayed days if the inspection is past due
+      const delayedDays =
+        inspection.nextInspectionDate < todaysDate
+          ? Math.ceil(
+              (todaysDate.getTime() - inspection.nextInspectionDate.getTime()) /
+                (1000 * 3600 * 24)
+            )
+          : undefined;
 
-        return {
-          id: product._id,
-          latestInspectionDate: product.latestInspectionDate || null,
-          nextInspectionDate: product.nextInspectionDate || null,
-          inspectionInterval: product.inspectionInterval || null,
-          name: product.name,
-          brand: product.brand,
-          type: product.type,
-          inspectionHistory: product.inspectionHistory || [],
-          inspectionDelayedTime: product.nextInspectionDate
-            ? Number(
-                (
-                  new Date(product.nextInspectionDate).getDay() -
-                  todaysDate.getDay()
-                )
-                  .toString()
-                  .split('-')[1]
-              )
-            : null,
-          isDelayed, // New flag to indicate if inspection is delayed
-        } as any;
-      })
-      // Sort delayed inspections first, then by next inspection date
-      .sort((a, b) => {
-        // Put delayed inspections first
-        if (a.isDelayed && !b.isDelayed) return -1;
-        if (!a.isDelayed && b.isDelayed) return 1;
-
-        // Then sort by next inspection date
-        const dateA = a.nextInspectionDate
-          ? new Date(a.nextInspectionDate)
-          : new Date(0);
-        const dateB = b.nextInspectionDate
-          ? new Date(b.nextInspectionDate)
-          : new Date(0);
-        return dateA.getTime() - dateB.getTime();
-      });
+      return {
+        ...inspection,
+        delayedDays,
+      };
+    });
 
     return {
       customers: customers.length,
       products: products.length,
-      upcomingInspections: inspections,
+      inspections,
     };
   } catch (error) {
     console.error('Error fetching home data:', error);
     return {
       customers: 0,
       products: 0,
-      upcomingInspections: [],
+      inspections: [],
     };
   }
 };
