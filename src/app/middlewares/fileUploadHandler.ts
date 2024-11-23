@@ -36,6 +36,9 @@ const fileUploadHandler = () => {
         case 'media':
           uploadDir = path.join(baseUploadDir, 'medias');
           break;
+        case 'pdfReport':
+          uploadDir = path.join(baseUploadDir, 'pdfReports');
+          break;
         case 'doc':
           uploadDir = path.join(baseUploadDir, 'docs');
           break;
@@ -91,7 +94,7 @@ const fileUploadHandler = () => {
           )
         );
       }
-    } else if (file.fieldname === 'doc') {
+    } else if (file.fieldname === 'doc' || file.fieldname === 'pdfReport') {
       if (file.mimetype === 'application/pdf') {
         cb(null, true);
       } else {
@@ -110,6 +113,7 @@ const fileUploadHandler = () => {
     { name: 'stepImages', maxCount: 1 },
     { name: 'inspectionImage', maxCount: 1 },
     { name: 'media', maxCount: 3 },
+    { name: 'pdfReport', maxCount: 1 },
     { name: 'doc', maxCount: 3 },
   ]);
   return upload;

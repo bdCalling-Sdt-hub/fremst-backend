@@ -6,6 +6,7 @@ import { ProductRoutes } from '../app/modules/product/product.route';
 import { QuestionRoutes } from '../app/modules/question/question.route';
 import { StepRoutes } from '../app/modules/step/step.route';
 import { InspectionRoutes } from '../app/modules/inspection/inspection.route';
+import { OldInspectionRoutes } from '../app/modules/oldInspection/oldInspection.route';
 const router = express.Router();
 
 const apiRoutes = [
@@ -36,6 +37,10 @@ const apiRoutes = [
   {
     path: '/inspection',
     route: InspectionRoutes,
+  },
+  {
+    path: '/oldinspection',
+    route: OldInspectionRoutes,
   },
 ];
 
