@@ -90,6 +90,15 @@ const getOldInspectionByProductAndCustomer = catchAsync(
     });
   }
 );
+const downloadFile = catchAsync(async (req: Request, res: Response) => {
+  const result = await OldInspectionService.downloadFile(req.params.id, res);
+  // sendResponse(res, {
+  //   statusCode: StatusCodes.OK,
+  //   success: true,
+  //   message: 'File downloaded successfully',
+  //   data: result,
+  // });
+});
 export const OldInspectionController = {
   createOldInspection,
   getAllOldInspections,
@@ -97,4 +106,5 @@ export const OldInspectionController = {
   updateOldInspection,
   deleteOldInspection,
   getOldInspectionByProductAndCustomer,
+  downloadFile,
 };

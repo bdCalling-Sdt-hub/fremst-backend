@@ -26,6 +26,7 @@ router.patch(
   fileUploadHandler(),
   OldInspectionController.updateOldInspection
 );
+router.get('/download/:id', OldInspectionController.downloadFile);
 router.delete(
   '/:id',
   auth(USER_ROLES.ADMIN, USER_ROLES.SUPERADMIN),

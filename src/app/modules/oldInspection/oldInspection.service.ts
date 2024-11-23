@@ -4,7 +4,9 @@ import { OldInspection } from './oldInspection.model';
 import { IOldInspection } from './oldInspection.interface';
 import { OldInspectionValidation } from './oldInspection.validation';
 import unlinkFile from '../../../shared/unlinkFile';
-
+import config from '../../../config';
+import path from 'path';
+import { Response } from 'express';
 const createOldInspection = async (
   payload: IOldInspection
 ): Promise<IOldInspection> => {
@@ -107,7 +109,14 @@ const deleteOldInspection = async (
   }
   return result;
 };
-
+const downloadFile = async (id: string, res: Response) => {
+  const result = await OldInspection.findById(id);
+  if (!result) {
+    throw new ApiError(StatusCodes.BAD_REQUEST, 'OldInspection not found!');
+  }
+  const filePath = path.join('uploads', result.pdfReport);
+  res.download(filePath);
+};
 export const OldInspectionService = {
   createOldInspection,
   getAllOldInspections,
@@ -115,4 +124,5 @@ export const OldInspectionService = {
   updateOldInspection,
   deleteOldInspection,
   getOldInspectionByProductAndCustomer,
+  downloadFile,
 };
