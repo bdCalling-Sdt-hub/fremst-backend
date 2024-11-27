@@ -3,4 +3,4 @@ node_modules
 
 /uploads
 /winston
-sparkpress.config.js
+sparkpress.config.cjs
