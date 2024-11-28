@@ -18,9 +18,12 @@ const getAllInspections = async (
   limit: number | null,
   queryFields: any
 ): Promise<IInspection[]> => {
-  const query = queryFields
+  const query = queryFields.search
     ? {
-        ...queryFields,
+        $or: [
+          { couponId: { $regex: queryFields.search, $options: 'i' } },
+          { name: { $regex: queryFields.search, $options: 'i' } },
+        ],
       }
     : {};
   let queryBuilder = Inspection.find(query);
