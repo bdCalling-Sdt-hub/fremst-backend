@@ -48,10 +48,10 @@ const getInspectionById = async (id: string): Promise<any> => {
     new Date(data.inspectionDate ? data.inspectionDate : data.createdAt),
     new Date(data.nextInspectionDate)
   )} month`;
-  const history = await getAllInspections(null, null, {
-    customer: data.customer._id,
-    product: data.product._id,
-  });
+  // const history = await getAllInspections(null, null, {
+  //   customer: data.customer._id,
+  //   product: data.product._id,
+  // });
   const result = {
     sku: data.sku,
     productName: data.product.name,
@@ -65,7 +65,6 @@ const getInspectionById = async (id: string): Promise<any> => {
     companyName: data.customer.companyName,
     contactPerson: data.customer.contactPerson,
     inspectionInterval: inspectionInterval,
-    history: history,
     productImage: data.productImage,
     _id: data._id,
   };

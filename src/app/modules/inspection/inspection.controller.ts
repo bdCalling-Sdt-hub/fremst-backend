@@ -35,7 +35,9 @@ const createInspection = catchAsync(async (req: Request, res: Response) => {
 
 const getAllInspections = catchAsync(async (req: Request, res: Response) => {
   const page = req.query.page || null;
+  delete req.query.page;
   const limit = req.query.limit || null;
+  delete req.query.limit;
   const query = req.query;
   const result = await InspectionService.getAllInspections(
     page as number | null,
