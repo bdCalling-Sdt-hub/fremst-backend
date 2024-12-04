@@ -112,18 +112,16 @@ const deleteAdminByID = async (id: string): Promise<Partial<IUser>> => {
   return admin;
 };
 const calculateInspectionInterval = (
-  inspectionDate: string,
-  nextInspectionDate: Date
+  startDate: Date,
+  endDate: Date
 ): number => {
-  // Convert inspectionDate string to Date
-  const startDate = new Date(inspectionDate);
-
   // Calculate the month difference
   const monthDifference =
-    (nextInspectionDate.getFullYear() - startDate.getFullYear()) * 12 +
-    (nextInspectionDate.getMonth() - startDate.getMonth());
+    (endDate.getFullYear() - startDate.getFullYear()) * 12 +
+    (endDate.getMonth() - startDate.getMonth());
 
-  return monthDifference;
+  // Ensure we return absolute value to handle both future and past dates
+  return Math.abs(monthDifference);
 };
 const getHomeData = async (): Promise<{
   customers: number;
@@ -146,15 +144,15 @@ const getHomeData = async (): Promise<{
       nextInspectionDate: {
         $lte: thirtyDaysFromNow,
       },
-    })
-      .populate({
-        path: 'product customer',
-        select: 'name', // Only select necessary fields
-      })
-      .lean();
+    }).populate({
+      path: 'product customer',
+      select: 'name', // Only select necessary fields
+    });
 
     // Process inspections to add delayedDays
-    const inspections = rawInspections.map(inspection => {
+    const inspections = rawInspections.map(rawInspection => {
+      //@ts-ignore
+      const inspection = rawInspection._doc;
       // Calculate delayed days if the inspection is past due
       const delayedDays =
         inspection.nextInspectionDate < todaysDate
@@ -164,11 +162,13 @@ const getHomeData = async (): Promise<{
             )
           : undefined;
       const inspectionInterval = `${calculateInspectionInterval(
-        inspection.inspectionDate,
-        inspection.nextInspectionDate
-      )
-        .toString()
-        .replace('-', '')} month`;
+        new Date(
+          inspection.inspectionDate
+            ? inspection.inspectionDate
+            : inspection.createdAt
+        ),
+        new Date(inspection.nextInspectionDate)
+      )} month`;
 
       return {
         ...inspection,

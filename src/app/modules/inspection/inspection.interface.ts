@@ -22,7 +22,7 @@ export type IInspection = {
   isApproved: boolean;
   isActive: boolean;
   productImage: string;
-  inspectionDate: string;
+  lastInspectionDate: string;
   nextInspectionDate: Date;
 };
 

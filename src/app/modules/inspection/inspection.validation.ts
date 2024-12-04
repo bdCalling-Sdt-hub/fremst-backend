@@ -53,9 +53,9 @@ const createInspectionZodSchema = z.object({
     required_error: 'isApproved is required',
     invalid_type_error: 'isApproved should be type boolean',
   }),
-  inspectionDate: z.string({
-    required_error: 'inspectionDate is required',
-    invalid_type_error: 'inspectionDate should be type string',
+  lastInspectionDate: z.string({
+    required_error: 'lastInspectionDate is required',
+    invalid_type_error: 'lastInspectionDate should be type string',
   }),
   nextInspectionDate: z.date({
     required_error: 'nextInspectionDate is required',
@@ -117,8 +117,8 @@ const updateInspectionZodSchema = z.object({
   isApproved: z
     .boolean({ invalid_type_error: 'isApproved should be type boolean' })
     .optional(),
-  inspectionDate: z
-    .date({ invalid_type_error: 'inspectionDate should be type date' })
+  lastInspectionDate: z
+    .string({ invalid_type_error: 'lastInspectionDate should be type date' })
     .optional(),
   nextInspectionDate: z
     .string({
