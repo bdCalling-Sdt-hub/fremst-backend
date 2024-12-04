@@ -111,7 +111,20 @@ const deleteAdminByID = async (id: string): Promise<Partial<IUser>> => {
   }
   return admin;
 };
+const calculateInspectionInterval = (
+  inspectionDate: string,
+  nextInspectionDate: Date
+): number => {
+  // Convert inspectionDate string to Date
+  const startDate = new Date(inspectionDate);
 
+  // Calculate the month difference
+  const monthDifference =
+    (nextInspectionDate.getFullYear() - startDate.getFullYear()) * 12 +
+    (nextInspectionDate.getMonth() - startDate.getMonth());
+
+  return monthDifference;
+};
 const getHomeData = async (): Promise<{
   customers: number;
   products: number;
@@ -150,9 +163,16 @@ const getHomeData = async (): Promise<{
                 (1000 * 3600 * 24)
             )
           : undefined;
+      const inspectionInterval = `${calculateInspectionInterval(
+        inspection.inspectionDate,
+        inspection.nextInspectionDate
+      )
+        .toString()
+        .replace('-', '')} month`;
 
       return {
         ...inspection,
+        inspectionInterval,
         delayedDays,
       };
     });
