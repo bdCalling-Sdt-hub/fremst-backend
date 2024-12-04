@@ -116,7 +116,7 @@ const deleteAdminByID = async (id: string): Promise<Partial<IUser>> => {
 const getHomeData = async (): Promise<{
   customers: number;
   products: number;
-  inspections: (IInspection & { delayedDays?: number })[];
+  inspections: any[];
 }> => {
   try {
     const [customers, products] = await Promise.all([
@@ -136,7 +136,7 @@ const getHomeData = async (): Promise<{
       },
     }).populate({
       path: 'product customer',
-      select: 'name', // Only select necessary fields
+      select: 'name brand companyName contactPerson',
     });
 
     // Process inspections to add delayedDays
@@ -150,7 +150,7 @@ const getHomeData = async (): Promise<{
               (todaysDate.getTime() - inspection.nextInspectionDate.getTime()) /
                 (1000 * 3600 * 24)
             )
-          : undefined;
+          : 0;
       const inspectionInterval = `${calculateInspectionInterval(
         new Date(
           inspection.inspectionDate
@@ -161,7 +161,20 @@ const getHomeData = async (): Promise<{
       )} month`;
 
       return {
-        ...inspection,
+        sku: inspection.sku,
+        enStandard: inspection.enStandard,
+        serialNo: inspection.serialNo,
+        isActive: inspection.isActive,
+        productImage: inspection.productImage,
+        summery: inspection.product.summery,
+        isApproved: inspection.product.isApproved,
+        lastInspectionDate: inspection.lastInspectionDate,
+        nextInspectionDate: inspection.nextInspectionDate,
+        createdAt: inspection.createdAt,
+        name: inspection.product.name,
+        brand: inspection.product.brand,
+        companyName: inspection.customer.companyName,
+        contactPerson: inspection.customer.contactPerson,
         inspectionInterval,
         delayedDays,
       };
