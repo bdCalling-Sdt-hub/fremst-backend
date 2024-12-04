@@ -14,15 +14,6 @@ const createProductZodSchema = z.object({
     invalid_type_error: 'type should be type string',
   }),
 
-  inspectionInterval: z.string({
-    required_error: 'inspectionInterval is required',
-    invalid_type_error: 'inspectionInterval should be type string',
-  }),
-  latestInspectionDate: z
-    .string({
-      invalid_type_error: 'latestInspectionDate should be type string',
-    })
-    .optional(),
   isActive: z.boolean({
     required_error: 'isActive is required',
     invalid_type_error: 'isActive should be type boolean',

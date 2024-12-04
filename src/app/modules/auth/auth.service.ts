@@ -178,7 +178,7 @@ const resetPasswordToDB = async (
   const isValid = await ResetToken.isExpireToken(token);
   if (!isValid) {
     throw new ApiError(
-      StatusCodes.BAD_REQUEST,
+      StatusCodes.UNAUTHORIZED,
       'Token expired, Please click again to the forget password'
     );
   }

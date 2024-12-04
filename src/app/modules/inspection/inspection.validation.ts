@@ -57,7 +57,7 @@ const createInspectionZodSchema = z.object({
     required_error: 'lastInspectionDate is required',
     invalid_type_error: 'lastInspectionDate should be type string',
   }),
-  nextInspectionDate: z.date({
+  nextInspectionDate: z.string({
     required_error: 'nextInspectionDate is required',
     invalid_type_error: 'nextInspectionDate should be type date',
   }),

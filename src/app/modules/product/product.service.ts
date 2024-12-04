@@ -13,31 +13,9 @@ const createProductToDB = async (
     // @ts-ignore
     isActive: payload.isActive === 'true' ? true : false,
   });
-  if (payload.latestInspectionDate) {
-    payload.latestInspectionDate = new Date(
-      payload.latestInspectionDate
-    ).toISOString();
-  } else {
-    payload.latestInspectionDate = new Date().toISOString();
-  }
-  // Calculate next inspection date
-  const inspectionInterval = payload.inspectionInterval;
-  if (
-    inspectionInterval !== 'SIX_MONTHS' &&
-    inspectionInterval !== 'TWELVE_MONTHS'
-  ) {
-    throw new ApiError(StatusCodes.BAD_REQUEST, 'Invalid inspectionInterval!');
-  }
-
-  const nextInspectionDate = new Date();
-  nextInspectionDate.setMonth(
-    nextInspectionDate.getMonth() +
-      (inspectionInterval === 'SIX_MONTHS' ? 6 : 12)
-  );
 
   const finalPayload = {
     ...payload,
-    nextInspectionDate: nextInspectionDate.toISOString(),
   };
 
   const result = await Product.create(finalPayload);

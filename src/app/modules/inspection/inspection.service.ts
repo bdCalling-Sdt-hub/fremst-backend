@@ -3,9 +3,10 @@ import ApiError from '../../../errors/ApiError';
 import { Inspection } from './inspection.model';
 import { IInspection } from './inspection.interface';
 import { InspectionValidation } from './inspection.validation';
-
+import { calculateInspectionInterval } from '../../../helpers/calculateInterval';
 const createInspection = async (payload: IInspection): Promise<any> => {
   await InspectionValidation.createInspectionZodSchema.parseAsync(payload);
+  payload.nextInspectionDate = new Date(payload.nextInspectionDate);
   const result = await Inspection.create(payload);
   if (!result) {
     throw new ApiError(StatusCodes.BAD_REQUEST, 'Failed to create inspection!');
@@ -35,11 +36,39 @@ const getAllInspections = async (
   return await queryBuilder;
 };
 
-const getInspectionById = async (id: string): Promise<IInspection | null> => {
-  const result = await Inspection.findById(id);
-  if (!result) {
+const getInspectionById = async (id: string): Promise<any> => {
+  const data: any = await Inspection.findById(id).populate({
+    path: 'product customer',
+    select: 'name brand type isActive companyName image contactPerson',
+  });
+  if (!data) {
     throw new ApiError(StatusCodes.BAD_REQUEST, 'Inspection not found!');
   }
+  const inspectionInterval = `${calculateInspectionInterval(
+    new Date(data.inspectionDate ? data.inspectionDate : data.createdAt),
+    new Date(data.nextInspectionDate)
+  )} month`;
+  const history = await getAllInspections(null, null, {
+    customer: data.customer._id,
+    product: data.product._id,
+  });
+  const result = {
+    sku: data.sku,
+    productName: data.product.name,
+    brand: data.product.brand,
+    type: data.product.type,
+    serialNo: data.serialNo,
+    enStandard: data.enStandard,
+    lastInspectionDate: data.lastInspectionDate,
+    nextInspectionDate: data.nextInspectionDate,
+    isActive: data.isActive,
+    companyName: data.customer.companyName,
+    contactPerson: data.customer.contactPerson,
+    inspectionInterval: inspectionInterval,
+    history: history,
+    productImage: data.productImage,
+    _id: data._id,
+  };
   return result;
 };
 
