@@ -4,6 +4,7 @@ import { Inspection } from './inspection.model';
 import { IInspection } from './inspection.interface';
 import { InspectionValidation } from './inspection.validation';
 import { calculateInspectionInterval } from '../../../helpers/calculateInterval';
+
 const createInspection = async (payload: IInspection): Promise<any> => {
   await InspectionValidation.createInspectionZodSchema.parseAsync(payload);
   payload.nextInspectionDate = new Date(payload.nextInspectionDate);
@@ -19,21 +20,53 @@ const getAllInspections = async (
   limit: number | null,
   queryFields: any
 ): Promise<IInspection[]> => {
-  const query = queryFields.search
-    ? {
-        $or: [
-          { couponId: { $regex: queryFields.search, $options: 'i' } },
-          { name: { $regex: queryFields.search, $options: 'i' } },
-        ],
-      }
-    : {};
-  let queryBuilder = Inspection.find(query);
+  let pipeline = [];
 
-  if (page && limit) {
-    queryBuilder = queryBuilder.skip((page - 1) * limit).limit(limit);
+  if (queryFields.search) {
+    pipeline.push(
+      {
+        $lookup: {
+          from: 'customers',
+          localField: 'customer',
+          foreignField: '_id',
+          as: 'customerInfo',
+        },
+      },
+      {
+        $match: {
+          $or: [
+            { sku: { $regex: queryFields.search, $options: 'i' } },
+            { serialNo: { $regex: queryFields.search, $options: 'i' } },
+            { enStandard: { $regex: queryFields.search, $options: 'i' } },
+            {
+              'customerInfo.companyName': {
+                $regex: queryFields.search,
+                $options: 'i',
+              },
+            },
+            {
+              'customerInfo.email': {
+                $regex: queryFields.search,
+                $options: 'i',
+              },
+            },
+            {
+              'customerInfo.contactPerson': {
+                $regex: queryFields.search,
+                $options: 'i',
+              },
+            },
+          ],
+        },
+      }
+    );
   }
 
-  return await queryBuilder;
+  if (page && limit) {
+    pipeline.push({ $skip: (page - 1) * limit }, { $limit: limit });
+  }
+
+  return await Inspection.aggregate(pipeline);
 };
 
 const getInspectionById = async (id: string): Promise<any> => {
