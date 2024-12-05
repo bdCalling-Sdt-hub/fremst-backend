@@ -161,6 +161,7 @@ const getHomeData = async (): Promise<{
       )} month`;
 
       return {
+        _id: inspection._id,
         sku: inspection.sku,
         enStandard: inspection.enStandard,
         serialNo: inspection.serialNo,
