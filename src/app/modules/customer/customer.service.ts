@@ -11,23 +11,29 @@ const createCustomer = async (payload: ICustomer): Promise<ICustomer> => {
   return result;
 };
 
-const getAllCustomers = async (search: string): Promise<ICustomer[]> => {
-  let result: any;
-  if (search !== '') {
-    result = await Customer.find({
-      $or: [
-        { companyName: { $regex: search, $options: 'i' } },
-        { companyPhone: { $regex: search, $options: 'i' } },
-        { contactPerson: { $regex: search, $options: 'i' } },
-        { email: { $regex: search, $options: 'i' } },
-        { address: { $regex: search, $options: 'i' } },
-      ],
-    });
-    return result;
-  } else {
-    result = await Customer.find();
+const getAllCustomers = async (
+  search: string,
+  page: number = 1,
+  limit: number = 10
+): Promise<ICustomer[]> => {
+  try {
+    const skip = (page - 1) * limit;
+    const query = search
+      ? {
+          $or: [
+            { companyName: { $regex: new RegExp(search, 'i') } },
+            { companyPhone: { $regex: new RegExp(search, 'i') } },
+            { contactPerson: { $regex: new RegExp(search, 'i') } },
+            { email: { $regex: new RegExp(search, 'i') } },
+            { address: { $regex: new RegExp(search, 'i') } },
+          ],
+        }
+      : {};
+
+    return await Customer.find(query).lean().skip(skip).limit(limit).exec();
+  } catch (error) {
+    throw new Error(`Error fetching customers: ${error}`);
   }
-  return result;
 };
 
 const getCustomerById = async (id: string): Promise<ICustomer | null> => {

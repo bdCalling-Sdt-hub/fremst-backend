@@ -14,7 +14,7 @@ router.post(
   CustomerController.createCustomer
 );
 router.get(
-  '/',
+  '/all',
   auth(USER_ROLES.ADMIN, USER_ROLES.SUPERADMIN),
   CustomerController.getAllCustomers
 );
