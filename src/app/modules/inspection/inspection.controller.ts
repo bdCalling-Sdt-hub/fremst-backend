@@ -34,14 +34,14 @@ const createInspection = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getAllInspections = catchAsync(async (req: Request, res: Response) => {
-  const page = req.query.page || null;
+  const page = req.query.page || 1;
   delete req.query.page;
-  const limit = req.query.limit || null;
+  const limit = req.query.limit || 20;
   delete req.query.limit;
   const query = req.query;
   const result = await InspectionService.getAllInspections(
-    page as number | null,
-    limit as number | null,
+    page as number,
+    limit as number,
     query
   );
   sendResponse(res, {
