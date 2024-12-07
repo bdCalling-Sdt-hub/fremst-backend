@@ -2,6 +2,7 @@ import { StatusCodes } from 'http-status-codes';
 import ApiError from '../../../errors/ApiError';
 import { Customer } from './customer.model';
 import { ICustomer } from './customer.interface';
+import { Inspection } from '../inspection/inspection.model';
 
 const createCustomer = async (payload: ICustomer): Promise<ICustomer> => {
   const result = await Customer.create(payload);
@@ -58,6 +59,12 @@ const updateCustomer = async (
 const deleteCustomer = async (id: string): Promise<ICustomer | null> => {
   const result = await Customer.findByIdAndDelete(id);
   if (!result) {
+    throw new ApiError(StatusCodes.BAD_REQUEST, 'Failed to delete customer!');
+  }
+  const deleteInspection = await Inspection.deleteMany({
+    customer: id,
+  });
+  if (!deleteInspection) {
     throw new ApiError(StatusCodes.BAD_REQUEST, 'Failed to delete customer!');
   }
   return result;
