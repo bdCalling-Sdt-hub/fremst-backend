@@ -13,8 +13,8 @@ const createCustomer = async (payload: ICustomer): Promise<ICustomer> => {
 
 const getAllCustomers = async (
   search: string,
-  page: number = 1,
-  limit: number = 10
+  page: number,
+  limit: number
 ): Promise<ICustomer[]> => {
   try {
     const skip = (page - 1) * limit;

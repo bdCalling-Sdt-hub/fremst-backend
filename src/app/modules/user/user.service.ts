@@ -128,12 +128,13 @@ const getHomeData = async (): Promise<{
     const thirtyDaysFromNow = new Date(todaysDate);
     thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 30);
 
-    // Find inspections within the next 30 days, including those that are delayed
+    // Find inspections that are either delayed or within the next 30 days
     const rawInspections = await Inspection.find({
       isActive: true,
-      nextInspectionDate: {
-        $lte: thirtyDaysFromNow,
-      },
+      $or: [
+        { nextInspectionDate: { $lt: todaysDate } }, // delayed inspections
+        { nextInspectionDate: { $lte: thirtyDaysFromNow, $gte: todaysDate } }, // upcoming within 30 days
+      ],
     }).populate({
       path: 'product customer',
       select: 'name brand companyName contactPerson',
@@ -167,15 +168,15 @@ const getHomeData = async (): Promise<{
         serialNo: inspection.serialNo,
         isActive: inspection.isActive,
         productImage: inspection.productImage,
-        summery: inspection.product.summery,
-        isApproved: inspection.product.isApproved,
+        summery: inspection.product?.summery || '',
+        isApproved: inspection.product?.isApproved || false,
         lastInspectionDate: inspection.lastInspectionDate,
         nextInspectionDate: inspection.nextInspectionDate,
         createdAt: inspection.createdAt,
-        name: inspection.product.name,
-        brand: inspection.product.brand,
-        companyName: inspection.customer.companyName,
-        contactPerson: inspection.customer.contactPerson,
+        name: inspection.product?.name || '',
+        brand: inspection.product?.brand || '',
+        companyName: inspection.customer?.companyName || '',
+        contactPerson: inspection.customer?.contactPerson || '',
         inspectionInterval,
         delayedDays,
       };
