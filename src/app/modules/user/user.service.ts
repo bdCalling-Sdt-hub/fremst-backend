@@ -178,7 +178,7 @@ const getHomeData = async (): Promise<{
         companyName: inspection.customer?.companyName || '',
         contactPerson: inspection.customer?.contactPerson || '',
         inspectionInterval,
-        delayedDays,
+        delayedDays: delayedDays,
       };
     });
 
