@@ -20,52 +20,108 @@ const getAllInspections = async (
   limit: number | null,
   queryFields: any
 ): Promise<IInspection[]> => {
-  let pipeline = [];
+  let pipeline = [
+    {
+      $sort: {
+        lastInspectionDate: -1,
+      },
+    },
+    {
+      $group: {
+        _id: {
+          product: '$product',
+          customer: '$customer',
+        },
+        doc: { $first: '$$ROOT' },
+      },
+    },
+    {
+      $replaceRoot: { newRoot: '$doc' },
+    },
+    {
+      $lookup: {
+        from: 'customers',
+        localField: 'customer',
+        foreignField: '_id',
+        as: 'customerInfo',
+      },
+    },
+    {
+      $lookup: {
+        from: 'products',
+        localField: 'product',
+        foreignField: '_id',
+        as: 'productInfo',
+      },
+    },
+    {
+      $unwind: '$customerInfo',
+    },
+    {
+      $unwind: '$productInfo',
+    },
+  ];
 
   if (queryFields.search) {
-    pipeline.push(
-      {
-        $lookup: {
-          from: 'customers',
-          localField: 'customer',
-          foreignField: '_id',
-          as: 'customerInfo',
-        },
+    pipeline.push({
+      //@ts-ignore
+      $match: {
+        $or: [
+          { sku: { $regex: queryFields.search, $options: 'i' } },
+          { serialNo: { $regex: queryFields.search, $options: 'i' } },
+          { enStandard: { $regex: queryFields.search, $options: 'i' } },
+          {
+            'customerInfo.companyName': {
+              $regex: queryFields.search,
+              $options: 'i',
+            },
+          },
+          {
+            'customerInfo.email': {
+              $regex: queryFields.search,
+              $options: 'i',
+            },
+          },
+          {
+            'customerInfo.contactPerson': {
+              $regex: queryFields.search,
+              $options: 'i',
+            },
+          },
+        ],
       },
-      {
-        $match: {
-          $or: [
-            { sku: { $regex: queryFields.search, $options: 'i' } },
-            { serialNo: { $regex: queryFields.search, $options: 'i' } },
-            { enStandard: { $regex: queryFields.search, $options: 'i' } },
-            {
-              'customerInfo.companyName': {
-                $regex: queryFields.search,
-                $options: 'i',
-              },
-            },
-            {
-              'customerInfo.email': {
-                $regex: queryFields.search,
-                $options: 'i',
-              },
-            },
-            {
-              'customerInfo.contactPerson': {
-                $regex: queryFields.search,
-                $options: 'i',
-              },
-            },
-          ],
-        },
-      }
-    );
+    });
   }
 
   if (page && limit) {
+    //@ts-ignore
     pipeline.push({ $skip: (page - 1) * limit }, { $limit: limit });
   }
 
+  pipeline.push({
+    //@ts-ignore
+    $project: {
+      _id: 1,
+      sku: 1,
+      serialNo: 1,
+      enStandard: 1,
+      lastInspectionDate: 1,
+      customer: {
+        _id: '$customerInfo._id',
+        companyName: '$customerInfo.companyName',
+        contactPerson: '$customerInfo.contactPerson',
+      },
+      product: {
+        _id: '$productInfo._id',
+        name: '$productInfo.name',
+        brand: '$productInfo.brand',
+        type: '$productInfo.type',
+        isActive: '$productInfo.isActive',
+        image: '$productInfo.image',
+      },
+    },
+  });
+  //@ts-ignore
   return await Inspection.aggregate(pipeline);
 };
 
