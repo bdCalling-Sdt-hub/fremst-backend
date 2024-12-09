@@ -5,6 +5,7 @@ import { IInspection } from './inspection.interface';
 import { InspectionValidation } from './inspection.validation';
 import { calculateInspectionInterval } from '../../../helpers/calculateInterval';
 import { OldInspection } from '../oldInspection/oldInspection.model';
+import { OldInspectionService } from '../oldInspection/oldInspection.service';
 
 const createInspection = async (payload: IInspection): Promise<any> => {
   await InspectionValidation.createInspectionZodSchema.parseAsync(payload);
@@ -244,11 +245,13 @@ const updateInspection = async (
   return result;
 };
 
-const deleteInspection = async (id: string): Promise<IInspection | null> => {
-  const isExistInspection = await getInspectionById(id);
+const deleteInspection = async (id: string): Promise<any | null> => {
+  const isExistInspection = await Inspection.findById(id);
   if (!isExistInspection) {
-    throw new ApiError(StatusCodes.BAD_REQUEST, 'Inspection not found!');
+    const result = await OldInspectionService.deleteOldInspection(id);
+    return result;
   }
+
   const result = await Inspection.findByIdAndDelete(id);
   if (!result) {
     throw new ApiError(StatusCodes.BAD_REQUEST, 'Failed to delete inspection!');
