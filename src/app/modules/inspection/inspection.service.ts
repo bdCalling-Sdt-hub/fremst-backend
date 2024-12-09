@@ -4,6 +4,7 @@ import { Inspection } from './inspection.model';
 import { IInspection } from './inspection.interface';
 import { InspectionValidation } from './inspection.validation';
 import { calculateInspectionInterval } from '../../../helpers/calculateInterval';
+import { OldInspection } from '../oldInspection/oldInspection.model';
 
 const createInspection = async (payload: IInspection): Promise<any> => {
   await InspectionValidation.createInspectionZodSchema.parseAsync(payload);
@@ -15,11 +16,56 @@ const createInspection = async (payload: IInspection): Promise<any> => {
   return { ...payload };
 };
 
-const getAllInspections = async (
-  page: number | null,
-  limit: number | null,
-  queryFields: any
-): Promise<IInspection[]> => {
+const getAllInspections = async (queryFields: any): Promise<any> => {
+  const { page, limit } = queryFields;
+  if (queryFields.customer && queryFields.product) {
+    const inspectionHistory = await Inspection.find({
+      customer: queryFields.customer,
+      product: queryFields.product,
+    })
+      .sort({ lastInspectionDate: -1 })
+      .select('lastInspectionDate _id');
+    const rawLatestInspection = await Inspection.findOne({
+      customer: queryFields.customer,
+      product: queryFields.product,
+    })
+      .sort({ lastInspectionDate: -1 })
+      .populate({
+        path: 'product customer',
+        select: 'name brand type isActive companyName image contactPerson',
+      });
+
+    const latestInspection = {
+      _id: rawLatestInspection?._id,
+      isActive: rawLatestInspection?.isActive,
+      //@ts-ignore
+      contactPerson: rawLatestInspection?.customer?.contactPerson,
+      //@ts-ignore
+      latestReport: rawLatestInspection?.pdfReport || '',
+    };
+
+    const oldInspectionHistory = await OldInspection.find({
+      customer: queryFields.customer,
+      product: queryFields.product,
+    })
+      .sort({ lastInspectionDate: -1 })
+      .select('lastInspectionDate _id pdfReport');
+
+    const history = [
+      ...inspectionHistory,
+      ...(oldInspectionHistory ? oldInspectionHistory : []),
+    ];
+    const finalFistory = await Promise.all(
+      history.map(async (item: any) => {
+        return {
+          _id: item._id,
+          lastInspectionDate: item.lastInspectionDate,
+          pdfReport: item.pdfReport || '',
+        };
+      })
+    );
+    return { latestInspection, history: finalFistory };
+  }
   let pipeline = [
     {
       $sort: {
@@ -114,6 +160,9 @@ const getAllInspections = async (
   if (page && limit) {
     //@ts-ignore
     pipeline.push({ $skip: (page - 1) * limit }, { $limit: limit });
+  } else {
+    //@ts-ignore
+    pipeline.push({ $skip: 0 }, { $limit: 20 });
   }
 
   pipeline.push({
@@ -139,6 +188,7 @@ const getAllInspections = async (
       },
     },
   });
+
   //@ts-ignore
   return await Inspection.aggregate(pipeline);
 };

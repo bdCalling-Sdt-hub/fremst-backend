@@ -9,7 +9,7 @@ const createOldInspectionZodSchema = z.object({
     required_error: 'product is required',
     invalid_type_error: 'product should be type objectID or string',
   }),
-  inspectionDate: z.string({
+  lastInspectionDate: z.string({
     required_error: 'inspectionDate is required',
     invalid_type_error: 'inspectionDate should be type string',
   }),

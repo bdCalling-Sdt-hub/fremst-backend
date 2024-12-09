@@ -3,6 +3,8 @@ import ApiError from '../../../errors/ApiError';
 import { Product } from './product.model';
 import { IProduct } from './product.interface';
 import { ProductValidation } from './product.validation';
+import { Inspection } from '../inspection/inspection.model';
+import { OldInspection } from '../oldInspection/oldInspection.model';
 
 const createProductToDB = async (
   payload: Partial<IProduct>
@@ -91,6 +93,18 @@ const updateProduct = async (
 
 const deleteProduct = async (id: string): Promise<IProduct | null> => {
   const result = await Product.findByIdAndDelete(id);
+  const deleteInspection = await Inspection.deleteMany({
+    product: id,
+  });
+  if (!deleteInspection) {
+    throw new ApiError(StatusCodes.BAD_REQUEST, 'Failed to delete product!');
+  }
+  const deleteOldInspection = await OldInspection.deleteMany({
+    product: id,
+  });
+  if (!deleteOldInspection) {
+    throw new ApiError(StatusCodes.BAD_REQUEST, 'Failed to delete product!');
+  }
   if (!result) {
     throw new ApiError(StatusCodes.BAD_REQUEST, 'Failed to delete product!');
   }

@@ -7,7 +7,7 @@ const oldInspectionSchema = new Schema<IOldInspection, OldInspectionModel>(
   {
     customer: { type: Schema.Types.ObjectId, ref: 'Customer', required: true },
     product: { type: Schema.Types.ObjectId, ref: 'Product', required: true },
-    inspectionDate: { type: String, required: true },
+    lastInspectionDate: { type: String, required: true },
     pdfReport: { type: String, required: true },
   },
   { timestamps: true }

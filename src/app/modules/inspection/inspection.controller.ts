@@ -13,7 +13,7 @@ const createInspection = catchAsync(async (req: Request, res: Response) => {
     'inspectionImage' in req.files &&
     req.files.inspectionImage[0]
   ) {
-    const image = `/images/${req.files.inspectionImage[0].filename}`;
+    const image = `/inspectionImages/${req.files.inspectionImage[0].filename}`;
     finalData = {
       productImage: image as string,
       ...data,
@@ -34,16 +34,8 @@ const createInspection = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getAllInspections = catchAsync(async (req: Request, res: Response) => {
-  const page = req.query.page || 1;
-  delete req.query.page;
-  const limit = req.query.limit || 20;
-  delete req.query.limit;
   const query = req.query;
-  const result = await InspectionService.getAllInspections(
-    page as number,
-    limit as number,
-    query
-  );
+  const result = await InspectionService.getAllInspections(query);
   sendResponse(res, {
     statusCode: StatusCodes.OK,
     success: true,
