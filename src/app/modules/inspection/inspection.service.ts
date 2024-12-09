@@ -88,6 +88,24 @@ const getAllInspections = async (
               $options: 'i',
             },
           },
+          {
+            'productInfo.name': {
+              $regex: queryFields.search,
+              $options: 'i',
+            },
+          },
+          {
+            'productInfo.brand': {
+              $regex: queryFields.search,
+              $options: 'i',
+            },
+          },
+          {
+            'productInfo.type': {
+              $regex: queryFields.search,
+              $options: 'i',
+            },
+          },
         ],
       },
     });
