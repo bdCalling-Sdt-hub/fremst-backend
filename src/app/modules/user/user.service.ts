@@ -166,6 +166,7 @@ const getHomeData = async (): Promise<{
         sku: inspection.sku,
         enStandard: inspection.enStandard,
         serialNo: inspection.serialNo,
+        type: inspection.product?.type,
         isActive: inspection.isActive,
         productImage: inspection.productImage,
         summery: inspection.product?.summery || '',
