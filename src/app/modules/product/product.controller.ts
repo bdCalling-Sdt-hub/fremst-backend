@@ -21,16 +21,22 @@ const createProduct = catchAsync(async (req: Request, res: Response) => {
 
 const getAllProducts = catchAsync(async (req: Request, res: Response) => {
   const search: any = req.query.search || '';
-  const page = req.query.page || null;
-  const limit = req.query.limit || null;
+  const page = req.query.page || 1;
+  const limit = req.query.limit || 10;
   const result = await ProductService.getAllProducts(
     search as string,
-    page as number | null,
-    limit as number | null
+    page as number,
+    limit as number
   );
   sendResponse(res, {
     statusCode: StatusCodes.OK,
     success: true,
+    pagination: {
+      page: page as number,
+      limit: limit as number,
+      totalPage: Math.ceil((result.length || 0) / (limit as number)),
+      total: result.length || 0,
+    },
     message: 'Products fetched successfully',
     data: result,
   });

@@ -89,10 +89,25 @@ const updateProfileToDB = async (
 
   return updateDoc;
 };
+const getAdminsFromDB = async (
+  query: Record<string, string>
+): Promise<IUser[]> => {
+  const { search, page, limit } = query;
+  try {
+    const skip = (Number(page) - 1) * Number(limit);
+    const query = search
+      ? {
+          $or: [
+            { name: { $regex: new RegExp(search, 'i') } },
+            { email: { $regex: new RegExp(search, 'i') } },
+          ],
+        }
+      : {};
 
-const getAdminsFromDB = async (): Promise<Partial<IUser>[]> => {
-  const admins = await User.find({ role: USER_ROLES.ADMIN });
-  return admins;
+    return await User.find(query).lean().skip(skip).limit(Number(limit)).exec();
+  } catch (error) {
+    throw new Error(`Error fetching customers: ${error}`);
+  }
 };
 
 const getAdminByID = async (id: string): Promise<Partial<IUser>> => {

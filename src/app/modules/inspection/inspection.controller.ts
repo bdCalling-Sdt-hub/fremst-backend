@@ -45,6 +45,16 @@ const getAllInspections = catchAsync(async (req: Request, res: Response) => {
   sendResponse(res, {
     statusCode: StatusCodes.OK,
     success: true,
+    pagination: {
+      //@ts-ignore
+      page: query.page || 1,
+      //@ts-ignore
+      limit: query.limit || 10,
+      //@ts-ignore
+      totalPage: Math.ceil((result.total || 0) / (query.limit || 20)),
+      //@ts-ignore
+      total: result.total || 0,
+    },
     message: 'Inspections fetched successfully',
     data: result,
   });

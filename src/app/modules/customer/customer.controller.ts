@@ -17,7 +17,7 @@ const createCustomer = catchAsync(async (req: Request, res: Response) => {
 const getAllCustomers = catchAsync(async (req: Request, res: Response) => {
   const search: any = req.query.search || '';
   const page = req.query.page || 1;
-  const limit = req.query.limit || 20;
+  const limit = req.query.limit || 10;
 
   const result = await CustomerService.getAllCustomers(
     search as string,
@@ -27,6 +27,12 @@ const getAllCustomers = catchAsync(async (req: Request, res: Response) => {
   sendResponse(res, {
     statusCode: StatusCodes.OK,
     success: true,
+    pagination: {
+      page: page as number,
+      limit: limit as number,
+      totalPage: Math.ceil((result.length || 0) / (limit as number)),
+      total: result.length || 0,
+    },
     message: 'Customers fetched successfully',
     data: result,
   });

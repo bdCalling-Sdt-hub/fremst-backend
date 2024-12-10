@@ -29,7 +29,7 @@ const getAllInspections = async (queryFields: any): Promise<any> => {
     })
       .sort({ lastInspectionDate: -1 })
       .select('lastInspectionDate _id');
-    const rawLatestInspection = await Inspection.findOne({
+    const rawLatestInspection: any = await Inspection.findOne({
       customer: queryFields.customer,
       product: queryFields.product,
     })
@@ -40,12 +40,26 @@ const getAllInspections = async (queryFields: any): Promise<any> => {
       });
 
     const latestInspection = {
-      _id: rawLatestInspection?._id,
+      sku: rawLatestInspection?.sku,
+      productName: rawLatestInspection?.product?.name,
+      brand: rawLatestInspection?.product?.brand,
+      type: rawLatestInspection?.product?.type,
+      serialNo: rawLatestInspection?.serialNo,
+      enStandard: rawLatestInspection?.enStandard,
+      lastInspectionDate: rawLatestInspection?.lastInspectionDate,
+      nextInspectionDate: rawLatestInspection?.nextInspectionDate,
       isActive: rawLatestInspection?.isActive,
-      //@ts-ignore
+      companyName: rawLatestInspection?.customer?.companyName,
       contactPerson: rawLatestInspection?.customer?.contactPerson,
-      //@ts-ignore
-      latestReport: rawLatestInspection?.pdfReport || '',
+      inspectionInterval: `${calculateInspectionInterval(
+        new Date(rawLatestInspection?.lastInspectionDate),
+        new Date(rawLatestInspection?.nextInspectionDate)
+      )} Months`,
+      productImage: rawLatestInspection?.productImage,
+      pdfReport:
+        rawLatestInspection?.pdfReport ||
+        '/pdfReports/besiktningsprotokoll-(english-(american))-(kopia)-(1)-1733827853863.pdf',
+      _id: rawLatestInspection?._id,
     };
 
     const oldInspectionHistory = await OldInspection.find({
@@ -166,7 +180,7 @@ const getAllInspections = async (queryFields: any): Promise<any> => {
     pipeline.push({ $skip: (page - 1) * limit }, { $limit: limit });
   } else {
     //@ts-ignore
-    pipeline.push({ $skip: 0 }, { $limit: 20 });
+    pipeline.push({ $skip: 0 }, { $limit: 10 });
   }
 
   pipeline.push({
@@ -177,6 +191,12 @@ const getAllInspections = async (queryFields: any): Promise<any> => {
       serialNo: 1,
       enStandard: 1,
       lastInspectionDate: 1,
+      pdfReport: {
+        $ifNull: [
+          '$pdfReport',
+          '/pdfReports/besiktningsprotokoll-(english-(american))-(kopia)-(1)-1733827853863.pdf',
+        ],
+      },
       customer: {
         _id: '$customerInfo._id',
         companyName: '$customerInfo.companyName',

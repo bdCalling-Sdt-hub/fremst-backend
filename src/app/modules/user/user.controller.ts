@@ -54,11 +54,20 @@ const updateProfile = catchAsync(
   }
 );
 const getAdmins = catchAsync(async (req: Request, res: Response) => {
-  const result = await UserService.getAdminsFromDB();
+  const query = req.query;
+  const result = await UserService.getAdminsFromDB(
+    query as Record<string, string>
+  );
 
   sendResponse(res, {
     success: true,
     statusCode: StatusCodes.OK,
+    pagination: {
+      page: 1,
+      limit: 10,
+      totalPage: Math.ceil((result.length || 0) / 10),
+      total: result.length || 0,
+    },
     message: 'Admins fetched successfully',
     data: result,
   });
