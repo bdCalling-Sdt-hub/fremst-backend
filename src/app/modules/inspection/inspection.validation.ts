@@ -66,6 +66,9 @@ const createInspectionZodSchema = z.object({
       invalid_type_error: 'isActive should be type boolean',
     })
     .optional(),
+  pdfReport: z
+    .string({ invalid_type_error: 'pdfReport should be type string' })
+    .optional(),
 });
 const updateInspectionZodSchema = z.object({
   product: z

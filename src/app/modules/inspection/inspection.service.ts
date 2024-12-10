@@ -227,6 +227,9 @@ const getInspectionById = async (id: string): Promise<any> => {
     contactPerson: data.customer ? data.customer.contactPerson : '',
     inspectionInterval: inspectionInterval,
     productImage: data.productImage,
+    pdfReport:
+      data.pdfReport ||
+      '/pdfReports/besiktningsprotokoll-(english-(american))-(kopia)-(1)-1733827853863.pdf',
     _id: data._id,
   };
   return result;
@@ -245,7 +248,7 @@ const updateInspection = async (
   if (!result) {
     throw new ApiError(StatusCodes.BAD_REQUEST, 'Failed to update inspection!');
   }
-  return result;
+  return isExistInspection;
 };
 
 const deleteInspection = async (id: string): Promise<any | null> => {

@@ -21,7 +21,13 @@ const createInspection = catchAsync(async (req: Request, res: Response) => {
   } else {
     throw new Error('inspectionImage is required');
   }
-
+  if (req.files && 'pdfReport' in req.files && req.files.pdfReport[0]) {
+    const pdfReport = `/pdfReports/${req.files.pdfReport[0].filename}`;
+    finalData = {
+      ...finalData,
+      pdfReport,
+    };
+  }
   const result = await InspectionService.createInspection(
     finalData as IInspection
   );

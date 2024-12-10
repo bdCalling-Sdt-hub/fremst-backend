@@ -64,6 +64,10 @@ const inspectionSchema = new Schema<IInspection, InspectionModel>(
       type: String,
       required: true,
     },
+    pdfReport: {
+      type: String,
+      required: true,
+    },
     nextInspectionDate: {
       type: Date,
       required: true,

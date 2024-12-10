@@ -176,6 +176,9 @@ const getHomeData = async (): Promise<{
         createdAt: inspection.createdAt,
         name: inspection.product?.name || '',
         brand: inspection.product?.brand || '',
+        pdfReport:
+          inspection.pdfReport ||
+          '/pdfReports/besiktningsprotokoll-(english-(american))-(kopia)-(1)-1733827853863.pdf',
         companyName: inspection.customer?.companyName || '',
         contactPerson: inspection.customer?.contactPerson || '',
         inspectionInterval,
