@@ -27,12 +27,17 @@ async function main() {
         colors.yellow(`♻️  Application listening on port:${config.port}`)
       );
     });
+
+    // Set HTTP request timeout to 30 seconds
+    server.timeout = 30000;
+
     cronJobs();
     //socket
     const io = new Server(server, {
       pingTimeout: 60000,
       cors: {
-        origin: '*',
+        origin: 'http://192.168.10.20:5000',
+        credentials: true,
       },
     });
     socketHelper.socket(io);
