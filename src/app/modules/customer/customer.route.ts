@@ -19,6 +19,11 @@ router.get(
   CustomerController.getAllCustomers
 );
 router.get(
+  '/all/lean',
+  auth(USER_ROLES.ADMIN, USER_ROLES.SUPERADMIN),
+  CustomerController.getAllCustomersLean
+);
+router.get(
   '/:id',
   auth(USER_ROLES.ADMIN, USER_ROLES.SUPERADMIN),
   CustomerController.getCustomerById

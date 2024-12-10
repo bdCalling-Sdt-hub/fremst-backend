@@ -13,6 +13,7 @@ router.post(
   InspectionController.createInspection
 );
 router.get('/', InspectionController.getAllInspections);
+router.get('/inspect/:id', InspectionController.getFullInspectionInfo);
 router.get('/:id', InspectionController.getInspectionById);
 router.patch(
   '/:id',

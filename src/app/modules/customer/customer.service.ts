@@ -69,10 +69,17 @@ const deleteCustomer = async (id: string): Promise<ICustomer | null> => {
   }
   return result;
 };
-
+const getAllCustomersLean = async (): Promise<ICustomer[]> => {
+  try {
+    return await Customer.find().select('_id contactPerson').lean().exec();
+  } catch (error) {
+    throw new Error(`Error fetching customers: ${error}`);
+  }
+};
 export const CustomerService = {
   createCustomer,
   getAllCustomers,
+  getAllCustomersLean,
   getCustomerById,
   updateCustomer,
   deleteCustomer,

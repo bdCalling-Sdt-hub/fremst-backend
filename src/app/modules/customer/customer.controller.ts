@@ -61,11 +61,20 @@ const deleteCustomer = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
-
+const getAllCustomersLean = catchAsync(async (req: Request, res: Response) => {
+  const result = await CustomerService.getAllCustomersLean();
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'Customers fetched successfully',
+    data: result,
+  });
+});
 export const CustomerController = {
   createCustomer,
   getAllCustomers,
   getCustomerById,
   updateCustomer,
   deleteCustomer,
+  getAllCustomersLean,
 };

@@ -76,11 +76,22 @@ const deleteInspection = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
-
+const getFullInspectionInfo = catchAsync(
+  async (req: Request, res: Response) => {
+    const result = await InspectionService.getFullInspectionInfo(req.params.id);
+    sendResponse(res, {
+      statusCode: StatusCodes.OK,
+      success: true,
+      message: 'Inspection fetched successfully',
+      data: result,
+    });
+  }
+);
 export const InspectionController = {
   createInspection,
   getAllInspections,
   getInspectionById,
   updateInspection,
   deleteInspection,
+  getFullInspectionInfo,
 };

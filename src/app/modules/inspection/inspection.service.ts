@@ -6,6 +6,9 @@ import { InspectionValidation } from './inspection.validation';
 import { calculateInspectionInterval } from '../../../helpers/calculateInterval';
 import { OldInspection } from '../oldInspection/oldInspection.model';
 import { OldInspectionService } from '../oldInspection/oldInspection.service';
+import { Step } from '../step/step.model';
+import { IStep } from '../step/step.interface';
+import { Question } from '../question/question.model';
 
 const createInspection = async (payload: IInspection): Promise<any> => {
   await InspectionValidation.createInspectionZodSchema.parseAsync(payload);
@@ -259,10 +262,34 @@ const deleteInspection = async (id: string): Promise<any | null> => {
   return result;
 };
 
+const getFullInspectionInfo = async (productID: string): Promise<any> => {
+  const steps = await Step.find({ product: productID });
+  if (!steps) {
+    throw new ApiError(StatusCodes.BAD_REQUEST, 'Steps not found!');
+  }
+  const result = await Promise.all(
+    steps.map(async (step: IStep) => {
+      const questions = await Question.find({ stepID: step._id })
+        .select('question isComment -_id')
+        .lean();
+      if (!questions) {
+        return [];
+      }
+      return {
+        step: step.name,
+        stepImage: step.stepImage,
+        questions,
+      };
+    })
+  );
+  return result;
+};
+
 export const InspectionService = {
   createInspection,
   getAllInspections,
   getInspectionById,
   updateInspection,
   deleteInspection,
+  getFullInspectionInfo,
 };
