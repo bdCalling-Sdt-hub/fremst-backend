@@ -9,7 +9,6 @@ const createProduct = catchAsync(async (req: Request, res: Response) => {
   if (req.files && 'image' in req.files && req.files.image[0]) {
     data.image = `/images/${req.files.image[0].filename}`;
   }
-  console.log;
   const result = await ProductService.createProductToDB(data);
   sendResponse(res, {
     statusCode: StatusCodes.CREATED,

@@ -22,6 +22,7 @@ export type IInspection = {
   protocolId?: string;
   isApproved: boolean;
   isActive: boolean;
+  storageLocation?: string;
   productImage: string;
   pdfReport: string;
   lastInspectionDate: string;

@@ -66,75 +66,79 @@ const createInspectionZodSchema = z.object({
       invalid_type_error: 'isActive should be type boolean',
     })
     .optional(),
+  storageLocation: z
+    .string({ invalid_type_error: 'storageLocation should be type string' })
+    .optional(),
+
   pdfReport: z
     .string({ invalid_type_error: 'pdfReport should be type string' })
     .optional(),
 });
-const updateInspectionZodSchema = z.object({
-  product: z
-    .string({
-      invalid_type_error: 'product should be type objectID or string',
-    })
-    .optional(),
-  customer: z
-    .string({
-      invalid_type_error: 'customer should be type objectID or string',
-    })
-    .optional(),
-  sku: z.string({ invalid_type_error: 'sku should be type string' }).optional(),
-  enStandard: z
-    .string({
-      invalid_type_error: 'enStandard should be type string',
-    })
-    .optional(),
-  serialNo: z
-    .string({
-      invalid_type_error: 'serialNo should be type string',
-    })
-    .optional(),
-  step: z
-    .array(
-      z.object({
-        name: z.string({ invalid_type_error: 'name should be type string' }),
-        answers: z.array(
-          z.object({
-            question: z
-              .string({
-                invalid_type_error: 'question should be type string',
-              })
-              .optional(),
-            comment: z
-              .string({ invalid_type_error: 'comment should be type string' })
-              .optional(),
-            isYes: z
-              .boolean({ invalid_type_error: 'isYes should be type boolean' })
-              .optional(),
-          })
-        ),
-      })
-    )
-    .optional(),
-  summery: z
-    .string({ invalid_type_error: 'summery should be type string' })
-    .optional(),
-  isApproved: z
-    .boolean({ invalid_type_error: 'isApproved should be type boolean' })
-    .optional(),
-  lastInspectionDate: z
-    .string({ invalid_type_error: 'lastInspectionDate should be type date' })
-    .optional(),
-  nextInspectionDate: z
-    .string({
-      invalid_type_error: 'nextInspectionDate should be type string',
-    })
-    .optional(),
-  isActive: z
-    .boolean({
-      invalid_type_error: 'isActive should be type boolean',
-    })
-    .optional(),
-});
+// const updateInspectionZodSchema = z.object({
+//   product: z
+//     .string({
+//       invalid_type_error: 'product should be type objectID or string',
+//     })
+//     .optional(),
+//   customer: z
+//     .string({
+//       invalid_type_error: 'customer should be type objectID or string',
+//     })
+//     .optional(),
+//   sku: z.string({ invalid_type_error: 'sku should be type string' }).optional(),
+//   enStandard: z
+//     .string({
+//       invalid_type_error: 'enStandard should be type string',
+//     })
+//     .optional(),
+//   serialNo: z
+//     .string({
+//       invalid_type_error: 'serialNo should be type string',
+//     })
+//     .optional(),
+//   step: z
+//     .array(
+//       z.object({
+//         name: z.string({ invalid_type_error: 'name should be type string' }),
+//         answers: z.array(
+//           z.object({
+//             question: z
+//               .string({
+//                 invalid_type_error: 'question should be type string',
+//               })
+//               .optional(),
+//             comment: z
+//               .string({ invalid_type_error: 'comment should be type string' })
+//               .optional(),
+//             isYes: z
+//               .boolean({ invalid_type_error: 'isYes should be type boolean' })
+//               .optional(),
+//           })
+//         ),
+//       })
+//     )
+//     .optional(),
+//   summery: z
+//     .string({ invalid_type_error: 'summery should be type string' })
+//     .optional(),
+//   isApproved: z
+//     .boolean({ invalid_type_error: 'isApproved should be type boolean' })
+//     .optional(),
+//   lastInspectionDate: z
+//     .string({ invalid_type_error: 'lastInspectionDate should be type date' })
+//     .optional(),
+//   nextInspectionDate: z
+//     .string({
+//       invalid_type_error: 'nextInspectionDate should be type string',
+//     })
+//     .optional(),
+//   isActive: z
+//     .boolean({
+//       invalid_type_error: 'isActive should be type boolean',
+//     })
+//     .optional(),
+// });
 export const InspectionValidation = {
   createInspectionZodSchema,
-  updateInspectionZodSchema,
+  // updateInspectionZodSchema,
 };

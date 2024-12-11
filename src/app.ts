@@ -22,6 +22,7 @@ app.use(express.urlencoded({ extended: true }));
 
 //file retrieve
 app.use('/stepImage', express.static('uploads/stepImage'));
+app.use('/images', express.static('uploads/images'));
 app.use('/profiles', express.static('uploads/profiles'));
 app.use('/inspectionImages', express.static('uploads/inspectionImages'));
 app.use('/medias', express.static('uploads/medias'));

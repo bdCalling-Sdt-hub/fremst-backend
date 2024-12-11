@@ -71,6 +71,10 @@ const inspectionSchema = new Schema<IInspection, InspectionModel>(
       type: String,
       required: true,
     },
+    storageLocation: {
+      type: String,
+      required: false,
+    },
     pdfReport: {
       type: String,
       required: true,

@@ -262,7 +262,7 @@ const updateInspection = async (
   id: string,
   payload: IInspection
 ): Promise<IInspection | null> => {
-  await InspectionValidation.updateInspectionZodSchema.parseAsync(payload);
+  // await InspectionValidation.updateInspectionZodSchema.parseAsync(payload);
   const isExistInspection = await getInspectionById(id);
   if (!isExistInspection) {
     throw new ApiError(StatusCodes.BAD_REQUEST, 'Inspection not found!');
