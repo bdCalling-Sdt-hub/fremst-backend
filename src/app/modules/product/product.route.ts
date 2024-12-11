@@ -12,16 +12,8 @@ router.post(
   fileUploadHandler(),
   ProductController.createProduct
 );
-router.get(
-  '/',
-  auth(USER_ROLES.ADMIN, USER_ROLES.SUPERADMIN),
-  ProductController.getAllProducts
-);
-router.get(
-  '/:id',
-  auth(USER_ROLES.ADMIN, USER_ROLES.SUPERADMIN),
-  ProductController.getProductById
-);
+router.get('/', ProductController.getAllProducts);
+router.get('/:id', ProductController.getProductById);
 router.patch(
   '/:id',
   fileUploadHandler(),

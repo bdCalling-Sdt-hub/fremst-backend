@@ -13,21 +13,9 @@ router.post(
   validateRequest(CustomerValidation.createCustomerZodSchema),
   CustomerController.createCustomer
 );
-router.get(
-  '/all',
-  auth(USER_ROLES.ADMIN, USER_ROLES.SUPERADMIN),
-  CustomerController.getAllCustomers
-);
-router.get(
-  '/all/lean',
-  auth(USER_ROLES.ADMIN, USER_ROLES.SUPERADMIN),
-  CustomerController.getAllCustomersLean
-);
-router.get(
-  '/:id',
-  auth(USER_ROLES.ADMIN, USER_ROLES.SUPERADMIN),
-  CustomerController.getCustomerById
-);
+router.get('/all', CustomerController.getAllCustomers);
+router.get('/all/lean', CustomerController.getAllCustomersLean);
+router.get('/:id', CustomerController.getCustomerById);
 router.patch(
   '/:id',
   auth(USER_ROLES.ADMIN, USER_ROLES.SUPERADMIN),
