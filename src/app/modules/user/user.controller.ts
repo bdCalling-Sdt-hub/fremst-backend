@@ -122,7 +122,7 @@ const holdUser = catchAsync(async (req: Request, res: Response) => {
   sendResponse(res, {
     success: true,
     statusCode: StatusCodes.OK,
-    message: 'User hold successfully',
+    message: `User ${result === 'hold' ? 'hold' : 'activated'} successfully`,
     data: result,
   });
 });
@@ -133,7 +133,7 @@ const isHold = catchAsync(async (req: Request, res: Response) => {
   sendResponse(res, {
     success: true,
     statusCode: StatusCodes.OK,
-    message: 'User hold successfully',
+    message: `User is ${result ? 'hold' : 'activated'}`,
     data: result,
   });
 });

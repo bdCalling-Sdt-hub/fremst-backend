@@ -215,7 +215,7 @@ const getHomeData = async (): Promise<{
     };
   }
 };
-const holdUser = async (id: string): Promise<Partial<IUser>> => {
+const holdUser = async (id: string): Promise<Partial<string>> => {
   const isExistUser = await User.findOne({ _id: id, role: USER_ROLES.ADMIN });
   if (!isExistUser) {
     throw new ApiError(StatusCodes.BAD_REQUEST, "Admin doesn't exist!");
@@ -227,11 +227,13 @@ const holdUser = async (id: string): Promise<Partial<IUser>> => {
   if (!admin) {
     throw new ApiError(StatusCodes.BAD_REQUEST, "Admin doesn't exist!");
   }
-  return {
-    //@ts-ignore
-    ...admin._doc,
-    status: admin.status,
-  };
+  const status = await User.findOne({ _id: id, role: USER_ROLES.ADMIN })
+    .select('status')
+    .lean();
+  if (!status) {
+    throw new ApiError(StatusCodes.BAD_REQUEST, "Admin doesn't exist!");
+  }
+  return status?.status.toString();
 };
 const isHold = async (id: string): Promise<Partial<boolean>> => {
   const admin = await User.findOne({ _id: id, role: USER_ROLES.ADMIN });
