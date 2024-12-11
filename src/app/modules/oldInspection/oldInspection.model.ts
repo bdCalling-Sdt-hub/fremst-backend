@@ -8,6 +8,13 @@ const oldInspectionSchema = new Schema<IOldInspection, OldInspectionModel>(
     customer: { type: Schema.Types.ObjectId, ref: 'Customer', required: true },
     product: { type: Schema.Types.ObjectId, ref: 'Product', required: true },
     lastInspectionDate: { type: String, required: true },
+    protocolId: {
+      type: String,
+      required: false,
+      default: Math.floor(
+        Math.random() * (999999 - 100000 + 1) + 100000
+      ).toString(),
+    },
     pdfReport: { type: String, required: true },
   },
   { timestamps: true }

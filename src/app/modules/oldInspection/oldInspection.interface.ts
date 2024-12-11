@@ -5,6 +5,7 @@ export type IOldInspection = {
   product: Types.ObjectId;
   lastInspectionDate: string;
   pdfReport: string;
+  protocolId?: string;
 };
 
 export type OldInspectionModel = Model<IOldInspection>;
