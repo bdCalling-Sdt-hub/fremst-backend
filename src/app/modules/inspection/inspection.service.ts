@@ -134,12 +134,14 @@ const getAllInspections = async (queryFields: any): Promise<any> => {
           { sku: { $regex: queryFields.search, $options: 'i' } },
           { serialNo: { $regex: queryFields.search, $options: 'i' } },
           { enStandard: { $regex: queryFields.search, $options: 'i' } },
+          { protocolId: { $regex: queryFields.search, $options: 'i' } },
           {
             'customerInfo.companyName': {
               $regex: queryFields.search,
               $options: 'i',
             },
           },
+
           {
             'customerInfo.email': {
               $regex: queryFields.search,
@@ -191,6 +193,7 @@ const getAllInspections = async (queryFields: any): Promise<any> => {
       serialNo: 1,
       enStandard: 1,
       lastInspectionDate: 1,
+      protocolId: 1,
       pdfReport: {
         $ifNull: [
           '$pdfReport',

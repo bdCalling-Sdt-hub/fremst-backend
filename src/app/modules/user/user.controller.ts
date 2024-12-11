@@ -105,7 +105,28 @@ const getHomeData = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+const holdUser = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const result = await UserService.holdUser(id);
 
+  sendResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: 'User hold successfully',
+    data: result,
+  });
+});
+const isHold = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const result = await UserService.isHold(id);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: 'User hold successfully',
+    data: result,
+  });
+});
 export const UserController = {
   createUser,
   getHomeData,
@@ -114,4 +135,6 @@ export const UserController = {
   getAdminByID,
   getAdmins,
   deleteAdminByID,
+  holdUser,
+  isHold,
 };

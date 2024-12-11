@@ -19,6 +19,7 @@ export type IInspection = {
     }
   ];
   summery: string;
+  protocolId?: string;
   isApproved: boolean;
   isActive: boolean;
   productImage: string;

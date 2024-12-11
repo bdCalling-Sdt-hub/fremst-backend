@@ -51,7 +51,7 @@ const updateStep = async (
   payload: IStep
 ): Promise<IStep | null> => {
   await StepValidation.updateStepZodSchema.parseAsync(payload);
-  if (payload.stepImage && payload.stepImage !== '/stepImages/default.png') {
+  if (payload.stepImage && payload.stepImage !== '/stepImage/default.png') {
     await unlinkFile(payload.stepImage);
   }
   const result = await Step.findByIdAndUpdate(id, payload, { new: true });

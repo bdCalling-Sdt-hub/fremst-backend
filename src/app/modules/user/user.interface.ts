@@ -7,8 +7,9 @@ export type IUser = {
   email: string;
   password: string;
   profile?: string;
-  status: 'active' | 'delete';
+  status: 'active' | 'hold';
   verified: boolean;
+  address?: string;
   authentication?: {
     isResetPassword: boolean;
     oneTimeCode: number;

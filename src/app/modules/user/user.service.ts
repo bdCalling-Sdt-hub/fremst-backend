@@ -215,13 +215,40 @@ const getHomeData = async (): Promise<{
     };
   }
 };
+const holdUser = async (id: string): Promise<Partial<IUser>> => {
+  const isExistUser = await User.findOne({ _id: id, role: USER_ROLES.ADMIN });
+  if (!isExistUser) {
+    throw new ApiError(StatusCodes.BAD_REQUEST, "Admin doesn't exist!");
+  }
+  const admin = await User.findOneAndUpdate(
+    { _id: id, role: USER_ROLES.ADMIN },
+    { status: isExistUser.status === 'active' ? 'hold' : 'active' }
+  );
+  if (!admin) {
+    throw new ApiError(StatusCodes.BAD_REQUEST, "Admin doesn't exist!");
+  }
+  return {
+    //@ts-ignore
+    ...admin._doc,
+    status: admin.status,
+  };
+};
+const isHold = async (id: string): Promise<Partial<boolean>> => {
+  const admin = await User.findOne({ _id: id, role: USER_ROLES.ADMIN });
+  if (!admin) {
+    throw new ApiError(StatusCodes.BAD_REQUEST, "Admin doesn't exist!");
+  }
 
+  return admin.status === 'hold';
+};
 export const UserService = {
   createUserToDB,
   getAdminsFromDB,
+  holdUser,
   getHomeData,
   getUserProfileFromDB,
   deleteAdminByID,
   getAdminByID,
   updateProfileToDB,
+  isHold,
 };

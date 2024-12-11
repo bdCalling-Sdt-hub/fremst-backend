@@ -60,6 +60,13 @@ const inspectionSchema = new Schema<IInspection, InspectionModel>(
       required: true,
       default: false,
     },
+    protocolId: {
+      type: String,
+      required: false,
+      default: Math.floor(
+        Math.random() * (999999 - 100000 + 1) + 100000
+      ).toString(),
+    },
     lastInspectionDate: {
       type: String,
       required: true,

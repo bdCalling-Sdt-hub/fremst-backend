@@ -4,6 +4,7 @@ import { StatusCodes } from 'http-status-codes';
 import globalErrorHandler from './app/middlewares/globalErrorHandler';
 import router from './routes';
 import { Morgan } from './shared/morgen';
+
 const app = express();
 
 //morgan
@@ -20,7 +21,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 //file retrieve
-app.use(express.static('uploads'));
+app.use('/stepImage', express.static('uploads/stepImage'));
+app.use('/profiles', express.static('uploads/profiles'));
+app.use('/inspectionImages', express.static('uploads/inspectionImages'));
+app.use('/medias', express.static('uploads/medias'));
+app.use('/pdfReports', express.static('uploads/pdfReports'));
+app.use('/docs', express.static('uploads/docs'));
 
 //router
 app.use('/api/v1', router);

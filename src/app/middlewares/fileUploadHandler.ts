@@ -30,8 +30,8 @@ const fileUploadHandler = () => {
         case 'profile':
           uploadDir = path.join(baseUploadDir, 'profiles');
           break;
-        case 'stepImages':
-          uploadDir = path.join(baseUploadDir, 'stepImages');
+        case 'stepImage':
+          uploadDir = path.join(baseUploadDir, 'stepImage');
           break;
         case 'inspectionImage':
           uploadDir = path.join(baseUploadDir, 'inspectionImages');
@@ -69,7 +69,7 @@ const fileUploadHandler = () => {
   const filterFilter = (req: Request, file: any, cb: FileFilterCallback) => {
     if (
       file.fieldname === 'image' ||
-      file.fieldname === 'stepImages' ||
+      file.fieldname === 'stepImage' ||
       file.fieldname === 'inspectionImage' ||
       file.fieldname === 'profile'
     ) {
@@ -114,7 +114,7 @@ const fileUploadHandler = () => {
     fileFilter: filterFilter,
   }).fields([
     { name: 'image', maxCount: 3 },
-    { name: 'stepImages', maxCount: 1 },
+    { name: 'stepImage', maxCount: 1 },
     { name: 'inspectionImage', maxCount: 1 },
     { name: 'media', maxCount: 3 },
     { name: 'pdfReport', maxCount: 1 },

@@ -25,6 +25,12 @@ router
     fileUploadHandler(),
     UserController.updateProfile
   );
+router.post('/hold/:id', auth(USER_ROLES.SUPERADMIN), UserController.holdUser);
+router.get(
+  '/isHold/:id',
+  auth(USER_ROLES.SUPERADMIN, USER_ROLES.ADMIN),
+  UserController.isHold
+);
 router.get('/admins', auth(USER_ROLES.SUPERADMIN), UserController.getAdmins);
 router.get(
   '/home',
