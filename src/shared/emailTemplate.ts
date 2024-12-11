@@ -1,4 +1,8 @@
-import { ICreateAccount, IResetPassword } from '../types/emailTamplate';
+import {
+  IAddedUserReminder,
+  ICreateAccount,
+  IResetPassword,
+} from '../types/emailTamplate';
 import dotenv from 'dotenv';
 dotenv.config();
 const createAccount = (values: ICreateAccount) => {
@@ -59,9 +63,30 @@ const upcomingInspectionReminder = (values: any) => {
   };
   return data;
 };
+const addedAdminReminder = (values: IAddedUserReminder) => {
+  const data = {
+    to: values.email,
+    subject: 'Verify your account',
+    html: `
+    <body style="width: 80%; margin: 0 auto; background-color: #fff; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); padding: 30px; text-align: center; ">
+        <img src="${process.env.PRODUCTION_URL}/logo.png" alt="Logo" style="display: block; margin: 0 auto 20px; width: 150px;" />
+        <h2 style="color: #2b2e62; font-size: 24px; margin-bottom: 20px;">Hey! ${values.name}, Fremst Account Credentials</h2>
+        <div>
+            <div style="background-color: #f0f0f0; padding: 15px; border-radius: 8px; font-size: 20px; letter-spacing: 2px; margin: 20px 0; word-break: break-all;">
+                email: ${values.email}
+            </div>
+            <div style="background-color: #f0f0f0; padding: 15px; border-radius: 8px; font-size: 20px; letter-spacing: 2px; margin: 20px 0; word-break: break-all;">
+                password: ${values.password}
+            </div>
+        </div>
+</body>`,
+  };
+  return data;
+};
 
 export const emailTemplate = {
   createAccount,
   resetPassword,
   upcomingInspectionReminder,
+  addedAdminReminder,
 };

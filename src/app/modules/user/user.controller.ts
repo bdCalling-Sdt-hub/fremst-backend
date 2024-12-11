@@ -3,12 +3,22 @@ import { StatusCodes } from 'http-status-codes';
 import catchAsync from '../../../shared/catchAsync';
 import sendResponse from '../../../shared/sendResponse';
 import { UserService } from './user.service';
+import { emailHelper } from '../../../helpers/emailHelper';
+import { emailTemplate } from '../../../shared/emailTemplate';
 
 const createUser = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { ...userData } = req.body;
     const result = await UserService.createUserToDB(userData);
-
+    if (result) {
+      await emailHelper.sendEmail(
+        emailTemplate.addedAdminReminder({
+          email: result.email,
+          name: result.name,
+          password: userData.password.toString(),
+        })
+      );
+    }
     sendResponse(res, {
       success: true,
       statusCode: StatusCodes.OK,

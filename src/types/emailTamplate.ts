@@ -15,3 +15,8 @@ export type IUpcommingInspection = {
   inspectionDate: string;
   inspectionTime: string;
 };
+export type IAddedUserReminder = {
+  email: string;
+  name: string;
+  password: string;
+};
