@@ -4,3 +4,4 @@ node_modules
 /uploads
 /winston
 sparkpress.config.cjs
+tamim.config.cjs
