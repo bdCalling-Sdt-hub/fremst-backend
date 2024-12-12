@@ -16,14 +16,8 @@ const createQuestion = catchAsync(async (req: Request, res: Response) => {
 
 const getAllQuestionsOfAProduct = catchAsync(
   async (req: Request, res: Response) => {
-    const productID: string = req.params.productID;
-    const step = req.query.step || null;
-    if (step === null) throw new Error('step is required');
-    if (!productID) throw new Error('Product id is required');
-    const result = await QuestionService.getAllQuestions(
-      productID as string,
-      step as string
-    );
+    const stepID: string = req.params.stepID as string;
+    const result = await QuestionService.getAllQuestions(stepID as string);
     sendResponse(res, {
       statusCode: StatusCodes.OK,
       success: true,

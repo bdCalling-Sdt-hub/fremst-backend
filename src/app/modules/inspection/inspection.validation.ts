@@ -69,7 +69,9 @@ const createInspectionZodSchema = z.object({
   storageLocation: z
     .string({ invalid_type_error: 'storageLocation should be type string' })
     .optional(),
-
+  protocolId: z
+    .string({ invalid_type_error: 'protocolId should be type string' })
+    .optional(),
   pdfReport: z
     .string({ invalid_type_error: 'pdfReport should be type string' })
     .optional(),

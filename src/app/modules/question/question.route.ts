@@ -13,10 +13,8 @@ router.post(
   validateRequest(QuestionValidation.createQuestionZodSchema),
   QuestionController.createQuestion
 );
-router.get(
-  '/products/:productID',
-  QuestionController.getAllQuestionsOfAProduct
-);
+router.get('/step/:stepID', QuestionController.getAllQuestionsOfAProduct);
+
 router.get('/:id', QuestionController.getQuestionById);
 router.patch(
   '/:id',

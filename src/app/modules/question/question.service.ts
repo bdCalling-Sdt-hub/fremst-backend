@@ -22,14 +22,8 @@ const createQuestion = async (payload: IQuestion): Promise<IQuestion> => {
   return result;
 };
 
-const getAllQuestions = async (
-  productID?: string,
-  stepName?: string
-): Promise<IQuestion[]> => {
-  const isExistStep = await Step.findOne({
-    product: productID,
-    name: stepName,
-  });
+const getAllQuestions = async (stepID?: string): Promise<IQuestion[]> => {
+  const isExistStep = await Step.findById(stepID);
   if (!isExistStep) {
     throw new ApiError(StatusCodes.BAD_REQUEST, 'Step not found!');
   }

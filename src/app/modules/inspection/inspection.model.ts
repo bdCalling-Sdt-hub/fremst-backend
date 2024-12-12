@@ -66,6 +66,7 @@ const inspectionSchema = new Schema<IInspection, InspectionModel>(
       default: Math.floor(
         Math.random() * (999999 - 100000 + 1) + 100000
       ).toString(),
+      unique: true,
     },
     lastInspectionDate: {
       type: String,
