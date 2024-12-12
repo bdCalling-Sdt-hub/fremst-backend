@@ -61,6 +61,7 @@ const createInspectionZodSchema = z.object({
     required_error: 'nextInspectionDate is required',
     invalid_type_error: 'nextInspectionDate should be type date',
   }),
+  month: z.number({}).optional(),
   isActive: z
     .boolean({
       invalid_type_error: 'isActive should be type boolean',
