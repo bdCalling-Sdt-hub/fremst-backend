@@ -22,14 +22,14 @@ const createQuestion = async (payload: IQuestion): Promise<IQuestion> => {
   return result;
 };
 
-const getAllQuestions = async (stepID?: string): Promise<IQuestion[]> => {
+const getAllQuestions = async (stepID?: string): Promise<any> => {
   const isExistStep = await Step.findById(stepID);
   if (!isExistStep) {
     throw new ApiError(StatusCodes.BAD_REQUEST, 'Step not found!');
   }
   const allQuestions = await Question.find({ stepID: isExistStep._id });
 
-  return allQuestions;
+  return { stepImage: isExistStep.stepImage, allQuestions };
 };
 
 const getQuestionById = async (id: string): Promise<IQuestion | null> => {

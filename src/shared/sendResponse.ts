@@ -10,6 +10,7 @@ type IData<T> = {
     totalPage: number;
     total: number;
   };
+  stepImage?: string;
   data?: T;
 };
 
@@ -18,6 +19,7 @@ const sendResponse = <T>(res: Response, data: IData<T>) => {
     success: data.success,
     message: data.message,
     pagination: data.pagination,
+    stepImage: data.stepImage,
     data: data.data,
   };
   res.status(data.statusCode).json(resData);

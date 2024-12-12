@@ -21,8 +21,9 @@ const getAllQuestionsOfAProduct = catchAsync(
     sendResponse(res, {
       statusCode: StatusCodes.OK,
       success: true,
+      stepImage: result.stepImage,
       message: 'Questions fetched successfully',
-      data: result,
+      data: result.allQuestions,
     });
   }
 );
