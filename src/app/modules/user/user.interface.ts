@@ -9,6 +9,7 @@ export type IUser = {
   profile?: string;
   status: 'active' | 'hold';
   verified: boolean;
+  contact: string;
   address?: string;
   authentication?: {
     isResetPassword: boolean;
