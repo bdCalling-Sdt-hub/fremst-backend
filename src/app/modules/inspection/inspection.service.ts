@@ -56,9 +56,7 @@ const getAllInspections = async (queryFields: any): Promise<any> => {
         new Date(rawLatestInspection?.nextInspectionDate)
       )} Months`,
       productImage: rawLatestInspection?.productImage,
-      pdfReport:
-        rawLatestInspection?.pdfReport ||
-        '/pdfReports/besiktningsprotokoll-(english-(american))-(kopia)-(1)-1733827853863.pdf',
+      pdfReport: rawLatestInspection?.pdfReport || 'Not Available',
       _id: rawLatestInspection?._id,
     };
 
