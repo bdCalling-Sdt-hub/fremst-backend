@@ -121,7 +121,48 @@ const getAllInspections = async (queryFields: any): Promise<any> => {
   //     $unwind: '$productInfo',
   //   },
   // ];
-  let pipeline = [];
+  let pipeline = [
+    {
+      $sort: {
+        lastInspectionDate: -1,
+      },
+    },
+    {
+      $group: {
+        _id: {
+          product: '$product',
+          customer: '$customer',
+        },
+        doc: { $first: '$$ROOT' },
+      },
+    },
+    {
+      $replaceRoot: { newRoot: '$doc' },
+    },
+    {
+      $lookup: {
+        from: 'customers',
+        localField: 'customer',
+        foreignField: '_id',
+        as: 'customerInfo',
+      },
+    },
+    {
+      $lookup: {
+        from: 'products',
+        localField: 'product',
+        foreignField: '_id',
+        as: 'productInfo',
+      },
+    },
+    {
+      $unwind: '$customerInfo',
+    },
+    {
+      $unwind: '$productInfo',
+    },
+  ];
+
   if (queryFields.search) {
     pipeline.push({
       //@ts-ignore
@@ -137,7 +178,6 @@ const getAllInspections = async (queryFields: any): Promise<any> => {
               $options: 'i',
             },
           },
-
           {
             'customerInfo.email': {
               $regex: queryFields.search,
@@ -156,18 +196,6 @@ const getAllInspections = async (queryFields: any): Promise<any> => {
               $options: 'i',
             },
           },
-          {
-            'productInfo.brand': {
-              $regex: queryFields.search,
-              $options: 'i',
-            },
-          },
-          {
-            'productInfo.type': {
-              $regex: queryFields.search,
-              $options: 'i',
-            },
-          },
         ],
       },
     });
@@ -180,40 +208,31 @@ const getAllInspections = async (queryFields: any): Promise<any> => {
     //@ts-ignore
     pipeline.push({ $skip: 0 }, { $limit: 10 });
   }
-
-  pipeline.push({
-    //@ts-ignore
-    $project: {
-      _id: 1,
-      sku: 1,
-      serialNo: 1,
-      enStandard: 1,
-      lastInspectionDate: 1,
-      protocolId: 1,
-      pdfReport: {
-        $ifNull: [
-          '$pdfReport',
-          '/pdfReports/besiktningsprotokoll-(english-(american))-(kopia)-(1)-1733827853863.pdf',
-        ],
-      },
-      customer: {
-        _id: '$customerInfo._id',
-        companyName: '$customerInfo.companyName',
-        contactPerson: '$customerInfo.contactPerson',
-      },
-      product: {
-        _id: '$productInfo._id',
-        name: '$productInfo.name',
-        brand: '$productInfo.brand',
-        type: '$productInfo.type',
-        isActive: '$productInfo.isActive',
-        image: '$productInfo.image',
-      },
-    },
-  });
-
   //@ts-ignore
-  return await Inspection.aggregate(pipeline);
+  const result = await Inspection.aggregate(pipeline);
+
+  const formattedResult = result.map((item: any) => ({
+    _id: item._id,
+    product: {
+      _id: item.productInfo._id,
+      name: item.productInfo.name,
+      image: item.productInfo.image,
+    },
+
+    customer: {
+      _id: item.customerInfo._id,
+      companyName: item.customerInfo.companyName,
+      contactPerson: item.customerInfo.contactPerson,
+    },
+    sku: item.sku,
+    enStandard: item.enStandard,
+    serialNo: item.serialNo,
+    protocolId: item.protocolId,
+    lastInspectionDate: item.lastInspectionDate,
+    pdfReport: item.pdfReport || 'Not Available',
+  }));
+
+  return formattedResult;
 };
 
 const getInspectionById = async (id: string): Promise<any> => {
