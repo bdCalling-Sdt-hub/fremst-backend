@@ -35,7 +35,11 @@ const userSchema = new Schema<IUser, UserModal>(
       select: 0,
       minlength: 8,
     },
-
+    companyName: {
+      type: String,
+      required: false,
+      default: '',
+    },
     profile: {
       type: String,
       default: '/profiles/default.png',

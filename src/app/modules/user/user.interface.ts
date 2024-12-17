@@ -7,6 +7,7 @@ export type IUser = {
   email: string;
   password: string;
   profile?: string;
+  companyName?: string;
   status: 'active' | 'hold';
   verified: boolean;
   contact: string;
