@@ -242,8 +242,8 @@ const getInspectionById = async (id: string): Promise<any> => {
     lastInspectionDate: data.lastInspectionDate,
     nextInspectionDate: data.nextInspectionDate,
     isActive: data.isActive,
-    companyName: data.customer ? data.customer.companyName : '',
-    contactPerson: data.customer ? data.customer.contactPerson : '',
+    companyName: data.companyName,
+    username: data.username,
     inspectionInterval: inspectionInterval,
     productImage: data.productImage,
     pdfReport:
