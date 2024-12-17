@@ -190,12 +190,12 @@ const getHomeData = async (): Promise<{
         nextInspectionDate: inspection.nextInspectionDate,
         createdAt: inspection.createdAt,
         name: inspection.product?.name || '',
-        brand: inspection.product?.brand || '',
+        brand: inspection.brand || '',
         pdfReport:
           inspection.pdfReport ||
           '/pdfReports/besiktningsprotokoll-(english-(american))-(kopia)-(1)-1733827853863.pdf',
-        companyName: inspection.customer?.companyName || '',
-        contactPerson: inspection.customer?.contactPerson || '',
+        companyName: inspection.companyName || '',
+        username: inspection.username || '',
         inspectionInterval,
         delayedDays: delayedDays,
       };
