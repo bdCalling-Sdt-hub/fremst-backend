@@ -26,9 +26,7 @@ const getAllInspections = async (queryFields: any): Promise<any> => {
     const inspectionHistory = await Inspection.find({
       customer: queryFields.customer,
       product: queryFields.product,
-    })
-      .sort({ lastInspectionDate: -1 })
-      .select('lastInspectionDate _id');
+    }).sort({ lastInspectionDate: -1 });
     const rawLatestInspection: any = await Inspection.findOne({
       customer: queryFields.customer,
       product: queryFields.product,
@@ -42,15 +40,15 @@ const getAllInspections = async (queryFields: any): Promise<any> => {
     const latestInspection = {
       sku: rawLatestInspection?.sku,
       productName: rawLatestInspection?.product?.name,
-      brand: rawLatestInspection?.product?.brand,
-      type: rawLatestInspection?.product?.type,
+      brand: rawLatestInspection?.brand,
+      type: rawLatestInspection?.type,
       serialNo: rawLatestInspection?.serialNo,
       enStandard: rawLatestInspection?.enStandard,
       lastInspectionDate: rawLatestInspection?.lastInspectionDate,
       nextInspectionDate: rawLatestInspection?.nextInspectionDate,
       isActive: rawLatestInspection?.isActive,
-      companyName: rawLatestInspection?.customer?.companyName,
-      contactPerson: rawLatestInspection?.customer?.contactPerson,
+      companyName: rawLatestInspection?.companyName,
+      username: rawLatestInspection?.username,
       inspectionInterval: `${calculateInspectionInterval(
         new Date(rawLatestInspection?.lastInspectionDate),
         new Date(rawLatestInspection?.nextInspectionDate)
@@ -76,54 +74,54 @@ const getAllInspections = async (queryFields: any): Promise<any> => {
         return {
           _id: item._id,
           lastInspectionDate: item.lastInspectionDate,
-          pdfReport: item.pdfReport || '',
+          pdfReport: item.pdfReport || 'Not Available',
         };
       })
     );
     return { latestInspection, history: finalFistory };
   }
-  let pipeline = [
-    {
-      $sort: {
-        lastInspectionDate: -1,
-      },
-    },
-    {
-      $group: {
-        _id: {
-          product: '$product',
-          customer: '$customer',
-        },
-        doc: { $first: '$$ROOT' },
-      },
-    },
-    {
-      $replaceRoot: { newRoot: '$doc' },
-    },
-    {
-      $lookup: {
-        from: 'customers',
-        localField: 'customer',
-        foreignField: '_id',
-        as: 'customerInfo',
-      },
-    },
-    {
-      $lookup: {
-        from: 'products',
-        localField: 'product',
-        foreignField: '_id',
-        as: 'productInfo',
-      },
-    },
-    {
-      $unwind: '$customerInfo',
-    },
-    {
-      $unwind: '$productInfo',
-    },
-  ];
-
+  // let pipeline = [
+  //   {
+  //     $sort: {
+  //       lastInspectionDate: -1,
+  //     },
+  //   },
+  //   {
+  //     $group: {
+  //       _id: {
+  //         product: '$product',
+  //         customer: '$customer',
+  //       },
+  //       doc: { $first: '$$ROOT' },
+  //     },
+  //   },
+  //   {
+  //     $replaceRoot: { newRoot: '$doc' },
+  //   },
+  //   {
+  //     $lookup: {
+  //       from: 'customers',
+  //       localField: 'customer',
+  //       foreignField: '_id',
+  //       as: 'customerInfo',
+  //     },
+  //   },
+  //   {
+  //     $lookup: {
+  //       from: 'products',
+  //       localField: 'product',
+  //       foreignField: '_id',
+  //       as: 'productInfo',
+  //     },
+  //   },
+  //   {
+  //     $unwind: '$customerInfo',
+  //   },
+  //   {
+  //     $unwind: '$productInfo',
+  //   },
+  // ];
+  let pipeline = [];
   if (queryFields.search) {
     pipeline.push({
       //@ts-ignore
