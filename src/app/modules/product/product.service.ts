@@ -36,17 +36,8 @@ const getAllProducts = async (
   const query = search
     ? {
         $or: [
-          { sku: { $regex: search, $options: 'i' } },
           { name: { $regex: search, $options: 'i' } },
-          { brand: { $regex: search, $options: 'i' } },
           { type: { $regex: search, $options: 'i' } },
-          { serialNo: { $regex: search, $options: 'i' } },
-          { enStandard: { $regex: search, $options: 'i' } },
-          { inspectionInterval: { $regex: search, $options: 'i' } },
-          { latestInspectionDate: { $regex: search, $options: 'i' } },
-          { inspectionHistory: { $regex: search, $options: 'i' } },
-          { companyName: { $regex: search, $options: 'i' } },
-          { contactPerson: { $regex: search, $options: 'i' } },
         ],
       }
     : {};
@@ -73,12 +64,6 @@ const updateProduct = async (
   const isExistProduct = await Product.findById(id);
   if (!isExistProduct) {
     throw new ApiError(StatusCodes.BAD_REQUEST, 'Product not found!');
-  }
-  if (payload.inspectionHistory) {
-    payload.inspectionHistory = JSON.parse(
-      //@ts-ignore
-      payload.inspectionHistory.replace(/'/g, '"')
-    );
   }
   if (payload.image && payload.image !== '/images/default.png') {
     await isExistProduct.image;

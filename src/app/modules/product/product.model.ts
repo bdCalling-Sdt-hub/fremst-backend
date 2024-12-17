@@ -11,32 +11,12 @@ const productSchema = new Schema<IProduct, ProductModel>(
       type: String,
       required: true,
     },
-    brand: {
-      type: String,
-      required: true,
-    },
+
     type: {
       type: String,
-      required: true,
-    },
-    inspectionHistory: {
-      type: [String],
       required: false,
+      default: '',
     },
-    companyName: {
-      type: String,
-      required: true,
-    },
-    contactPerson: {
-      type: String,
-      required: true,
-    },
-    question: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: 'Question',
-      },
-    ],
   },
   { timestamps: true }
 );

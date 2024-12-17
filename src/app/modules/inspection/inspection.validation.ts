@@ -76,6 +76,18 @@ const createInspectionZodSchema = z.object({
   pdfReport: z
     .string({ invalid_type_error: 'pdfReport should be type string' })
     .optional(),
+  brand: z.string({
+    required_error: 'brand is required',
+    invalid_type_error: 'brand should be type string',
+  }),
+  companyName: z.string({
+    required_error: 'companyName is required',
+    invalid_type_error: 'companyName should be type string',
+  }),
+  username: z.string({
+    required_error: 'username is required',
+    invalid_type_error: 'username should be type string',
+  }),
 });
 // const updateInspectionZodSchema = z.object({
 //   product: z

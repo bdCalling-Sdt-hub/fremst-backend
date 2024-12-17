@@ -60,6 +60,18 @@ const inspectionSchema = new Schema<IInspection, InspectionModel>(
       required: true,
       default: false,
     },
+    brand: {
+      type: String,
+      required: true,
+    },
+    companyName: {
+      type: String,
+      required: true,
+    },
+    username: {
+      type: String,
+      required: true,
+    },
     protocolId: {
       type: String,
       required: false,

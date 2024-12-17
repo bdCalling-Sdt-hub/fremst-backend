@@ -6,6 +6,9 @@ export type IInspection = {
   customer: Types.ObjectId;
   enStandard: string;
   serialNo: string;
+  brand: string;
+  companyName: string;
+  username: string;
   step: [
     {
       name: string;
