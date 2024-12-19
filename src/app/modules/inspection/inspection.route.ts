@@ -12,7 +12,11 @@ router.post(
   fileUploadHandler(),
   InspectionController.createInspection
 );
-router.get('/', InspectionController.getAllInspections);
+router.get(
+  '/',
+  auth(USER_ROLES.ADMIN, USER_ROLES.CUSTOMER, USER_ROLES.ADMIN),
+  InspectionController.getAllInspections
+);
 router.get('/inspect/:id', InspectionController.getFullInspectionInfo);
 router.get('/:id', InspectionController.getInspectionById);
 router.patch(

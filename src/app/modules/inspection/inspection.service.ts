@@ -121,13 +121,15 @@ const getAllInspections = async (queryFields: any, user: any): Promise<any> => {
   //     $unwind: '$productInfo',
   //   },
   // ];
-  let pipeline = [
+  let pipeline: any[] = [
     {
       $sort: {
         lastInspectionDate: -1,
       },
-      ...(user.role === 'CUSTOMER' ? [{ $match: { customer: user.id } }] : []),
     },
+    ...(user && user.role === 'CUSTOMER'
+      ? [{ $match: { customer: user.id } }]
+      : []),
     {
       $group: {
         _id: {
@@ -166,7 +168,6 @@ const getAllInspections = async (queryFields: any, user: any): Promise<any> => {
 
   if (queryFields.search) {
     pipeline.push({
-      //@ts-ignore
       $match: {
         $or: [
           { sku: { $regex: queryFields.search, $options: 'i' } },
