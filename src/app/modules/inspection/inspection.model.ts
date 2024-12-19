@@ -14,7 +14,7 @@ const inspectionSchema = new Schema<IInspection, InspectionModel>(
     },
     customer: {
       type: Schema.Types.ObjectId,
-      ref: 'Customer',
+      ref: 'User',
       required: true,
     },
     step: [

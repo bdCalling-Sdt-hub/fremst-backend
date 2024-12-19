@@ -64,16 +64,16 @@ const getCustomerById = async (id: string): Promise<ICustomer | null> => {
 const updateCustomer = async (
   id: string,
   payload: ICustomer
-): Promise<ICustomer | null> => {
-  const result = await Customer.findByIdAndUpdate(id, payload, { new: true });
+): Promise<IUser | null> => {
+  const result = await User.findByIdAndUpdate(id, payload, { new: true });
   if (!result) {
     throw new ApiError(StatusCodes.BAD_REQUEST, 'Failed to update customer!');
   }
   return result;
 };
 
-const deleteCustomer = async (id: string): Promise<ICustomer | null> => {
-  const result = await Customer.findByIdAndDelete(id);
+const deleteCustomer = async (id: string): Promise<IUser | null> => {
+  const result = await User.findByIdAndDelete(id);
   if (!result) {
     throw new ApiError(StatusCodes.BAD_REQUEST, 'Failed to delete customer!');
   }
@@ -85,9 +85,9 @@ const deleteCustomer = async (id: string): Promise<ICustomer | null> => {
   }
   return result;
 };
-const getAllCustomersLean = async (): Promise<ICustomer[]> => {
+const getAllCustomersLean = async (): Promise<IUser[]> => {
   try {
-    return await Customer.find().select('_id contactPerson').lean().exec();
+    return await User.find().select('_id contactPerson').lean().exec();
   } catch (error) {
     throw new Error(`Error fetching customers: ${error}`);
   }
