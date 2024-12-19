@@ -22,6 +22,10 @@ export const CustomerValidation = {
         required_error: 'phone is required',
         invalid_type_error: 'phone should be type string',
       }),
+      password: z.string({
+        required_error: 'password is required',
+        invalid_type_error: 'password should be type string',
+      }),
       address: z.string({
         required_error: 'address is required',
         invalid_type_error: 'address should be type string',
@@ -47,6 +51,9 @@ export const CustomerValidation = {
         .optional(),
       address: z
         .string({ invalid_type_error: 'address should be type string' })
+        .optional(),
+      password: z
+        .string({ invalid_type_error: 'password should be type string' })
         .optional(),
     }),
   }),

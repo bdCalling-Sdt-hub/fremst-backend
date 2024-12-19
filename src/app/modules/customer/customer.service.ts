@@ -3,12 +3,24 @@ import ApiError from '../../../errors/ApiError';
 import { Customer } from './customer.model';
 import { ICustomer } from './customer.interface';
 import { Inspection } from '../inspection/inspection.model';
+import { User } from '../user/user.model';
+import { IUser } from '../user/user.interface';
+import { USER_ROLES } from '../../../enums/user';
+import { emailHelper } from '../../../helpers/emailHelper';
+import { emailTemplate } from '../../../shared/emailTemplate';
 
-const createCustomer = async (payload: ICustomer): Promise<ICustomer> => {
-  const result = await Customer.create(payload);
+const createCustomer = async (payload: IUser): Promise<IUser> => {
+  const result = await User.create({ ...payload, role: USER_ROLES.CUSTOMER });
   if (!result) {
     throw new ApiError(StatusCodes.BAD_REQUEST, 'Failed to create customer!');
   }
+  await emailHelper.sendEmail(
+    emailTemplate.addedAdminReminder({
+      email: payload.email,
+      name: payload.name,
+      password: payload.password.toString(),
+    })
+  );
   return result;
 };
 
@@ -16,7 +28,7 @@ const getAllCustomers = async (
   search: string,
   page: number,
   limit: number
-): Promise<ICustomer[]> => {
+): Promise<IUser[]> => {
   try {
     const skip = (page - 1) * limit;
     const query = search
@@ -31,7 +43,11 @@ const getAllCustomers = async (
         }
       : {};
 
-    return await Customer.find(query).lean().skip(skip).limit(limit).exec();
+    return await User.find({ ...query, role: USER_ROLES.CUSTOMER })
+      .lean()
+      .skip(skip)
+      .limit(limit)
+      .exec();
   } catch (error) {
     throw new Error(`Error fetching customers: ${error}`);
   }
