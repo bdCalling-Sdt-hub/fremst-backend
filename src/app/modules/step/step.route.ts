@@ -10,7 +10,7 @@ const router = express.Router();
 
 router.post(
   '/create',
-  auth(USER_ROLES.ADMIN, USER_ROLES.SUPERADMIN),
+  auth(USER_ROLES.ADMIN, USER_ROLES.CUSTOMER, USER_ROLES.SUPERADMIN),
   fileUploadHandler(),
   StepController.createStep
 );
@@ -18,13 +18,13 @@ router.get('/product/:productID', StepController.getAllStepsByProductID);
 router.get('/:id', StepController.getStepById);
 router.patch(
   '/:id',
-  auth(USER_ROLES.ADMIN, USER_ROLES.SUPERADMIN),
+  auth(USER_ROLES.ADMIN, USER_ROLES.CUSTOMER, USER_ROLES.SUPERADMIN),
   fileUploadHandler(),
   StepController.updateStep
 );
 router.delete(
   '/:id',
-  auth(USER_ROLES.ADMIN, USER_ROLES.SUPERADMIN),
+  auth(USER_ROLES.ADMIN, USER_ROLES.CUSTOMER, USER_ROLES.SUPERADMIN),
   StepController.deleteStep
 );
 

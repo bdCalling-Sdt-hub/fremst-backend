@@ -8,7 +8,7 @@ const router = express.Router();
 
 router.post(
   '/create',
-  auth(USER_ROLES.ADMIN, USER_ROLES.SUPERADMIN),
+  auth(USER_ROLES.ADMIN, USER_ROLES.CUSTOMER, USER_ROLES.SUPERADMIN),
   fileUploadHandler(),
   ProductController.createProduct
 );
@@ -17,12 +17,12 @@ router.get('/:id', ProductController.getProductById);
 router.patch(
   '/:id',
   fileUploadHandler(),
-  auth(USER_ROLES.ADMIN, USER_ROLES.SUPERADMIN),
+  auth(USER_ROLES.ADMIN, USER_ROLES.CUSTOMER, USER_ROLES.SUPERADMIN),
   ProductController.updateProduct
 );
 router.delete(
   '/:id',
-  auth(USER_ROLES.ADMIN, USER_ROLES.SUPERADMIN),
+  auth(USER_ROLES.ADMIN, USER_ROLES.CUSTOMER, USER_ROLES.SUPERADMIN),
   ProductController.deleteProduct
 );
 

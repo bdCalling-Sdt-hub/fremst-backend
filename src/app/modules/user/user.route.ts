@@ -9,7 +9,7 @@ const router = express.Router();
 
 router.get(
   '/profile',
-  auth(USER_ROLES.ADMIN, USER_ROLES.SUPERADMIN),
+  auth(USER_ROLES.ADMIN, USER_ROLES.CUSTOMER, USER_ROLES.SUPERADMIN),
   UserController.getUserProfile
 );
 
@@ -21,20 +21,20 @@ router
     UserController.createUser
   )
   .patch(
-    auth(USER_ROLES.ADMIN, USER_ROLES.SUPERADMIN),
+    auth(USER_ROLES.ADMIN, USER_ROLES.CUSTOMER, USER_ROLES.SUPERADMIN),
     fileUploadHandler(),
     UserController.updateProfile
   );
 router.post('/hold/:id', auth(USER_ROLES.SUPERADMIN), UserController.holdUser);
 router.get(
   '/isHold/:id',
-  auth(USER_ROLES.SUPERADMIN, USER_ROLES.ADMIN),
+  auth(USER_ROLES.SUPERADMIN, USER_ROLES.ADMIN, USER_ROLES.CUSTOMER),
   UserController.isHold
 );
 router.get('/admins', auth(USER_ROLES.SUPERADMIN), UserController.getAdmins);
 router.get(
   '/home',
-  auth(USER_ROLES.ADMIN, USER_ROLES.SUPERADMIN),
+  auth(USER_ROLES.ADMIN, USER_ROLES.CUSTOMER, USER_ROLES.SUPERADMIN),
   UserController.getHomeData
 );
 router.get(

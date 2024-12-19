@@ -8,7 +8,7 @@ const router = express.Router();
 
 router.post(
   '/create',
-  auth(USER_ROLES.ADMIN, USER_ROLES.SUPERADMIN),
+  auth(USER_ROLES.ADMIN, USER_ROLES.CUSTOMER, USER_ROLES.SUPERADMIN),
   fileUploadHandler(),
   InspectionController.createInspection
 );
@@ -17,13 +17,13 @@ router.get('/inspect/:id', InspectionController.getFullInspectionInfo);
 router.get('/:id', InspectionController.getInspectionById);
 router.patch(
   '/:id',
-  auth(USER_ROLES.ADMIN, USER_ROLES.SUPERADMIN),
+  auth(USER_ROLES.ADMIN, USER_ROLES.CUSTOMER, USER_ROLES.SUPERADMIN),
   InspectionController.updateInspection
 );
 
 router.delete(
   '/:id',
-  auth(USER_ROLES.ADMIN, USER_ROLES.SUPERADMIN),
+  auth(USER_ROLES.ADMIN, USER_ROLES.CUSTOMER, USER_ROLES.SUPERADMIN),
   InspectionController.deleteInspection
 );
 export const InspectionRoutes = router;

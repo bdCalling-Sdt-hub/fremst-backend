@@ -9,7 +9,7 @@ const router = express.Router();
 
 router.post(
   '/add',
-  auth(USER_ROLES.ADMIN, USER_ROLES.SUPERADMIN),
+  auth(USER_ROLES.ADMIN, USER_ROLES.CUSTOMER, USER_ROLES.SUPERADMIN),
   validateRequest(CustomerValidation.createCustomerZodSchema),
   CustomerController.createCustomer
 );
@@ -18,13 +18,13 @@ router.get('/all/lean', CustomerController.getAllCustomersLean);
 router.get('/:id', CustomerController.getCustomerById);
 router.patch(
   '/:id',
-  auth(USER_ROLES.ADMIN, USER_ROLES.SUPERADMIN),
+  auth(USER_ROLES.ADMIN, USER_ROLES.CUSTOMER, USER_ROLES.SUPERADMIN),
   validateRequest(CustomerValidation.updateCustomerZodSchema),
   CustomerController.updateCustomer
 );
 router.delete(
   '/:id',
-  auth(USER_ROLES.ADMIN, USER_ROLES.SUPERADMIN),
+  auth(USER_ROLES.ADMIN, USER_ROLES.CUSTOMER, USER_ROLES.SUPERADMIN),
   CustomerController.deleteCustomer
 );
 
