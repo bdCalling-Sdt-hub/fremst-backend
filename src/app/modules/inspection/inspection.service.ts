@@ -20,7 +20,7 @@ const createInspection = async (payload: IInspection): Promise<any> => {
   return { ...payload };
 };
 
-const getAllInspections = async (queryFields: any): Promise<any> => {
+const getAllInspections = async (queryFields: any, user: any): Promise<any> => {
   const { page, limit } = queryFields;
   if (queryFields.customer && queryFields.product) {
     const inspectionHistory = await Inspection.find({
@@ -126,6 +126,7 @@ const getAllInspections = async (queryFields: any): Promise<any> => {
       $sort: {
         lastInspectionDate: -1,
       },
+      ...(user.role === 'CUSTOMER' ? [{ $match: { customer: user.id } }] : []),
     },
     {
       $group: {

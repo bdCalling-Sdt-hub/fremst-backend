@@ -128,17 +128,18 @@ const deleteAdminByID = async (id: string): Promise<Partial<IUser>> => {
   return admin;
 };
 
-const getHomeData = async (): Promise<{
+const getHomeData = async (
+  user: any
+): Promise<{
   customers: number;
   products: number;
   inspections: any[];
 }> => {
   try {
     const [customers, products] = await Promise.all([
-      Customer.find(),
+      User.find(user.role === USER_ROLES.CUSTOMER ? { email: user.email } : {}),
       Product.find(),
     ]);
-
     const todaysDate = new Date();
     const thirtyDaysFromNow = new Date(todaysDate);
     thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 30);

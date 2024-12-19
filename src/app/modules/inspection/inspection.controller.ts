@@ -41,7 +41,8 @@ const createInspection = catchAsync(async (req: Request, res: Response) => {
 
 const getAllInspections = catchAsync(async (req: Request, res: Response) => {
   const query = req.query;
-  const result = await InspectionService.getAllInspections(query);
+  const user = req.user || null;
+  const result = await InspectionService.getAllInspections(query, user);
   sendResponse(res, {
     statusCode: StatusCodes.OK,
     success: true,

@@ -106,7 +106,8 @@ const deleteAdminByID = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getHomeData = catchAsync(async (req: Request, res: Response) => {
-  const result = await UserService.getHomeData();
+  const user = req.user;
+  const result = await UserService.getHomeData(user);
 
   sendResponse(res, {
     success: true,

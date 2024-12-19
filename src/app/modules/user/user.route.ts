@@ -16,7 +16,7 @@ router.get(
 router
   .route('/')
   .post(
-    auth(USER_ROLES.SUPERADMIN),
+    auth(USER_ROLES.SUPERADMIN, USER_ROLES.CUSTOMER),
     validateRequest(UserValidation.createUserZodSchema),
     UserController.createUser
   )
@@ -31,7 +31,11 @@ router.get(
   auth(USER_ROLES.SUPERADMIN, USER_ROLES.ADMIN, USER_ROLES.CUSTOMER),
   UserController.isHold
 );
-router.get('/admins', auth(USER_ROLES.SUPERADMIN), UserController.getAdmins);
+router.get(
+  '/admins',
+  auth(USER_ROLES.SUPERADMIN, USER_ROLES.CUSTOMER),
+  UserController.getAdmins
+);
 router.get(
   '/home',
   auth(USER_ROLES.ADMIN, USER_ROLES.CUSTOMER, USER_ROLES.SUPERADMIN),
