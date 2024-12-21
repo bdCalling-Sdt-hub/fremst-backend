@@ -36,6 +36,7 @@ const fileUploadHandler = () => {
         case 'inspectionImage':
           uploadDir = path.join(baseUploadDir, 'inspectionImages');
           break;
+
         case 'media':
           uploadDir = path.join(baseUploadDir, 'medias');
           break;
