@@ -14,7 +14,7 @@ router.post(
 );
 router.get(
   '/',
-  auth(USER_ROLES.ADMIN, USER_ROLES.CUSTOMER, USER_ROLES.ADMIN),
+  auth(USER_ROLES.ADMIN, USER_ROLES.CUSTOMER, USER_ROLES.SUPERADMIN),
   InspectionController.getAllInspections
 );
 router.get('/inspect/:id', InspectionController.getFullInspectionInfo);
