@@ -10,7 +10,7 @@ import { Step } from '../step/step.model';
 import { IStep } from '../step/step.interface';
 import { Question } from '../question/question.model';
 import { USER_ROLES } from '../../../enums/user';
-import { Types } from 'mongoose';
+import { SchemaTypes, Types } from 'mongoose';
 
 const createInspection = async (payload: IInspection): Promise<any> => {
   await InspectionValidation.createInspectionZodSchema.parseAsync(payload);
@@ -124,155 +124,44 @@ const getAllInspections = async (queryFields: any, user: any): Promise<any> => {
   //     $unwind: '$productInfo',
   //   },
   // ];
-  let pipeline: any[] = [];
-
-  // Start with matching if user is customer - moved this to the beginning
-  if (user && user.role === USER_ROLES.CUSTOMER) {
-    pipeline.push({
-      $match: { customer: new Types.ObjectId(user.id) },
-    });
-  }
-
-  // Add lookups before sorting/grouping
-  pipeline.push(
-    {
-      $lookup: {
-        from: 'customers',
-        localField: 'customer',
-        foreignField: '_id',
-        as: 'customerInfo',
-      },
-    },
-    {
-      $lookup: {
-        from: 'products',
-        localField: 'product',
-        foreignField: '_id',
-        as: 'productInfo',
-      },
-    },
-    // Add a match to ensure lookups succeeded
-    {
-      $match: {
-        customerInfo: { $ne: [] },
-        productInfo: { $ne: [] },
-      },
-    },
-    {
-      $unwind: {
-        path: '$customerInfo',
-        preserveNullAndEmptyArrays: true,
-      },
-    },
-    {
-      $unwind: {
-        path: '$productInfo',
-        preserveNullAndEmptyArrays: true,
-      },
-    }
-  );
-
-  // Now do sorting and grouping
-  pipeline.push(
-    {
-      $sort: {
-        lastInspectionDate: -1,
-      },
-    },
-    {
-      $group: {
-        _id: {
-          product: '$product',
-          customer: '$customer',
-        },
-        doc: { $first: '$$ROOT' },
-      },
-    },
-    {
-      $replaceRoot: { newRoot: '$doc' },
-    }
-  );
-
-  // Add search if provided
-  if (queryFields?.search) {
-    pipeline.push({
-      $match: {
-        $or: [
-          { sku: { $regex: queryFields.search, $options: 'i' } },
-          { serialNo: { $regex: queryFields.search, $options: 'i' } },
-          { enStandard: { $regex: queryFields.search, $options: 'i' } },
-          { protocolId: { $regex: queryFields.search, $options: 'i' } },
-          {
-            'customerInfo.companyName': {
-              $regex: queryFields.search,
-              $options: 'i',
-            },
-          },
-          {
-            'customerInfo.email': {
-              $regex: queryFields.search,
-              $options: 'i',
-            },
-          },
-          {
-            'customerInfo.contactPerson': {
-              $regex: queryFields.search,
-              $options: 'i',
-            },
-          },
-          {
-            'productInfo.name': {
-              $regex: queryFields.search,
-              $options: 'i',
-            },
-          },
-        ],
-      },
-    });
-  }
-
-  // Add pagination
-  if (page && limit) {
-    pipeline.push({ $skip: (page - 1) * limit }, { $limit: parseInt(limit) });
-  } else {
-    pipeline.push({ $skip: 0 }, { $limit: 10 });
-  }
-
-  // Add error handling around the aggregate
   try {
-    const result = await Inspection.aggregate(pipeline);
+    let query = Inspection.find()
+      .populate('product', 'name image')
+      .populate('customer', 'name email')
+      .sort({ lastInspectionDate: -1 });
 
-    if (!result || result.length === 0) {
-      console.log(
-        'No inspections found for pipeline:',
-        JSON.stringify(pipeline, null, 2)
-      );
-      return [];
+    // If user is customer, only show their inspections
+    if (user?.role === USER_ROLES.CUSTOMER) {
+      query = query.where('customer', user.id);
     }
 
-    const formattedResult = result.map((item: any) => ({
+    // Basic search
+    if (queryFields?.search) {
+      query = query.or([
+        { sku: new RegExp(queryFields.search, 'i') },
+        { serialNo: new RegExp(queryFields.search, 'i') },
+        { enStandard: new RegExp(queryFields.search, 'i') },
+      ]);
+    }
+
+    // Simple pagination
+    const skip = ((page || 1) - 1) * (limit || 10);
+    query = query.skip(skip).limit(limit || 10);
+
+    const result = await query.lean();
+
+    return result.map(item => ({
       _id: item._id,
-      product: {
-        _id: item.productInfo._id,
-        name: item.productInfo.name,
-        image: item.productInfo.image,
-      },
-      customer: {
-        _id: item.customerInfo._id,
-        companyName: item.customerInfo.companyName,
-        contactPerson: item.customerInfo.contactPerson,
-      },
+      product: item.product,
+      customer: item.customer,
       sku: item.sku,
-      enStandard: item.enStandard,
       serialNo: item.serialNo,
-      protocolId: item.protocolId,
+      enStandard: item.enStandard,
       lastInspectionDate: item.lastInspectionDate,
       pdfReport: item.pdfReport || 'Not Available',
     }));
-
-    return formattedResult;
   } catch (error) {
-    console.error('Error in inspection aggregation:', error);
+    console.error('Error:', error);
     throw new ApiError(
       StatusCodes.INTERNAL_SERVER_ERROR,
       'Error retrieving inspections'
