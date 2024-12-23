@@ -224,28 +224,34 @@ const holdUser = async (id: string): Promise<Partial<string>> => {
   if (!isExistUser) {
     throw new ApiError(StatusCodes.BAD_REQUEST, "User doesn't exist!");
   }
-  const admin = await User.findOneAndUpdate(
+  const user = await User.findOneAndUpdate(
     { _id: id, role: { $ne: USER_ROLES.SUPERADMIN } },
     { status: isExistUser.status === 'active' ? 'hold' : 'active' }
   );
-  if (!admin) {
-    throw new ApiError(StatusCodes.BAD_REQUEST, "Admin doesn't exist!");
+  if (!user) {
+    throw new ApiError(StatusCodes.BAD_REQUEST, "User doesn't exist!");
   }
-  const status = await User.findOne({ _id: id, role: USER_ROLES.ADMIN })
+  const status = await User.findOne({
+    _id: id,
+    role: { $ne: USER_ROLES.SUPERADMIN },
+  })
     .select('status')
     .lean();
   if (!status) {
-    throw new ApiError(StatusCodes.BAD_REQUEST, "Admin doesn't exist!");
+    throw new ApiError(StatusCodes.BAD_REQUEST, "User doesn't exist!");
   }
   return status?.status.toString();
 };
 const isHold = async (id: string): Promise<Partial<boolean>> => {
-  const admin = await User.findOne({ _id: id, role: USER_ROLES.ADMIN });
-  if (!admin) {
-    throw new ApiError(StatusCodes.BAD_REQUEST, "Admin doesn't exist!");
+  const user = await User.findOne({
+    _id: id,
+    role: { $ne: USER_ROLES.SUPERADMIN },
+  });
+  if (!user) {
+    throw new ApiError(StatusCodes.BAD_REQUEST, "User doesn't exist!");
   }
 
-  return admin.status === 'hold';
+  return user.status === 'hold';
 };
 export const UserService = {
   createUserToDB,
