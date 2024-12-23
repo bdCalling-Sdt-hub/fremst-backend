@@ -10,6 +10,7 @@ import { Step } from '../step/step.model';
 import { IStep } from '../step/step.interface';
 import { Question } from '../question/question.model';
 import { USER_ROLES } from '../../../enums/user';
+import { Types } from 'mongoose';
 
 const createInspection = async (payload: IInspection): Promise<any> => {
   await InspectionValidation.createInspectionZodSchema.parseAsync(payload);
@@ -123,24 +124,17 @@ const getAllInspections = async (queryFields: any, user: any): Promise<any> => {
   //     $unwind: '$productInfo',
   //   },
   // ];
-  let pipeline: any[] = [
-    {
-      $sort: {
-        lastInspectionDate: -1,
-      },
-    },
-    {
-      $group: {
-        _id: {
-          product: '$product',
-          customer: '$customer',
-        },
-        doc: { $first: '$$ROOT' },
-      },
-    },
-    {
-      $replaceRoot: { newRoot: '$doc' },
-    },
+  let pipeline: any[] = [];
+
+  // Start with matching if user is customer - moved this to the beginning
+  if (user && user.role === USER_ROLES.CUSTOMER) {
+    pipeline.push({
+      $match: { customer: new Types.ObjectId(user.id) },
+    });
+  }
+
+  // Add lookups before sorting/grouping
+  pipeline.push(
     {
       $lookup: {
         from: 'customers',
@@ -157,19 +151,50 @@ const getAllInspections = async (queryFields: any, user: any): Promise<any> => {
         as: 'productInfo',
       },
     },
+    // Add a match to ensure lookups succeeded
     {
-      $unwind: '$customerInfo',
+      $match: {
+        customerInfo: { $ne: [] },
+        productInfo: { $ne: [] },
+      },
     },
     {
-      $unwind: '$productInfo',
+      $unwind: {
+        path: '$customerInfo',
+        preserveNullAndEmptyArrays: true,
+      },
     },
-  ];
-  if (user && user.role === USER_ROLES.CUSTOMER) {
-    pipeline.push({
-      $match: { customer: user.id },
-    });
-  }
-  if (queryFields.search) {
+    {
+      $unwind: {
+        path: '$productInfo',
+        preserveNullAndEmptyArrays: true,
+      },
+    }
+  );
+
+  // Now do sorting and grouping
+  pipeline.push(
+    {
+      $sort: {
+        lastInspectionDate: -1,
+      },
+    },
+    {
+      $group: {
+        _id: {
+          product: '$product',
+          customer: '$customer',
+        },
+        doc: { $first: '$$ROOT' },
+      },
+    },
+    {
+      $replaceRoot: { newRoot: '$doc' },
+    }
+  );
+
+  // Add search if provided
+  if (queryFields?.search) {
     pipeline.push({
       $match: {
         $or: [
@@ -206,38 +231,53 @@ const getAllInspections = async (queryFields: any, user: any): Promise<any> => {
     });
   }
 
+  // Add pagination
   if (page && limit) {
-    //@ts-ignore
-    pipeline.push({ $skip: (page - 1) * limit }, { $limit: limit });
+    pipeline.push({ $skip: (page - 1) * limit }, { $limit: parseInt(limit) });
   } else {
-    //@ts-ignore
     pipeline.push({ $skip: 0 }, { $limit: 10 });
   }
-  //@ts-ignore
-  const result = await Inspection.aggregate(pipeline);
 
-  const formattedResult = result.map((item: any) => ({
-    _id: item._id,
-    product: {
-      _id: item.productInfo._id,
-      name: item.productInfo.name,
-      image: item.productInfo.image,
-    },
+  // Add error handling around the aggregate
+  try {
+    const result = await Inspection.aggregate(pipeline);
 
-    customer: {
-      _id: item.customerInfo._id,
-      companyName: item.customerInfo.companyName,
-      contactPerson: item.customerInfo.contactPerson,
-    },
-    sku: item.sku,
-    enStandard: item.enStandard,
-    serialNo: item.serialNo,
-    protocolId: item.protocolId,
-    lastInspectionDate: item.lastInspectionDate,
-    pdfReport: item.pdfReport || 'Not Available',
-  }));
+    if (!result || result.length === 0) {
+      console.log(
+        'No inspections found for pipeline:',
+        JSON.stringify(pipeline, null, 2)
+      );
+      return [];
+    }
 
-  return formattedResult;
+    const formattedResult = result.map((item: any) => ({
+      _id: item._id,
+      product: {
+        _id: item.productInfo._id,
+        name: item.productInfo.name,
+        image: item.productInfo.image,
+      },
+      customer: {
+        _id: item.customerInfo._id,
+        companyName: item.customerInfo.companyName,
+        contactPerson: item.customerInfo.contactPerson,
+      },
+      sku: item.sku,
+      enStandard: item.enStandard,
+      serialNo: item.serialNo,
+      protocolId: item.protocolId,
+      lastInspectionDate: item.lastInspectionDate,
+      pdfReport: item.pdfReport || 'Not Available',
+    }));
+
+    return formattedResult;
+  } catch (error) {
+    console.error('Error in inspection aggregation:', error);
+    throw new ApiError(
+      StatusCodes.INTERNAL_SERVER_ERROR,
+      'Error retrieving inspections'
+    );
+  }
 };
 
 const getInspectionById = async (id: string): Promise<any> => {
