@@ -222,10 +222,10 @@ const holdUser = async (id: string): Promise<Partial<string>> => {
     role: { $ne: USER_ROLES.SUPERADMIN },
   });
   if (!isExistUser) {
-    throw new ApiError(StatusCodes.BAD_REQUEST, "Admin doesn't exist!");
+    throw new ApiError(StatusCodes.BAD_REQUEST, "User doesn't exist!");
   }
   const admin = await User.findOneAndUpdate(
-    { _id: id, role: USER_ROLES.ADMIN },
+    { _id: id, role: { $ne: USER_ROLES.SUPERADMIN } },
     { status: isExistUser.status === 'active' ? 'hold' : 'active' }
   );
   if (!admin) {
