@@ -9,6 +9,7 @@ import { OldInspectionService } from '../oldInspection/oldInspection.service';
 import { Step } from '../step/step.model';
 import { IStep } from '../step/step.interface';
 import { Question } from '../question/question.model';
+import { USER_ROLES } from '../../../enums/user';
 
 const createInspection = async (payload: IInspection): Promise<any> => {
   await InspectionValidation.createInspectionZodSchema.parseAsync(payload);
@@ -127,7 +128,7 @@ const getAllInspections = async (queryFields: any, user: any): Promise<any> => {
         lastInspectionDate: -1,
       },
     },
-    ...(user && user.role === 'CUSTOMER'
+    ...(user && user.role === USER_ROLES.CUSTOMER
       ? [{ $match: { customer: user.id } }]
       : []),
     {

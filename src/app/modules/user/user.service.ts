@@ -217,7 +217,10 @@ const getHomeData = async (
   }
 };
 const holdUser = async (id: string): Promise<Partial<string>> => {
-  const isExistUser = await User.findOne({ _id: id, role: USER_ROLES.ADMIN });
+  const isExistUser = await User.findOne({
+    _id: id,
+    role: { $ne: USER_ROLES.SUPERADMIN },
+  });
   if (!isExistUser) {
     throw new ApiError(StatusCodes.BAD_REQUEST, "Admin doesn't exist!");
   }
