@@ -4,6 +4,7 @@ import ApiError from '../../../errors/ApiError';
 import { StatusCodes } from 'http-status-codes';
 import { Product } from '../product/product.model';
 import { Customer } from '../customer/customer.model';
+import { User } from '../user/user.model';
 
 const inspectionSchema = new Schema<IInspection, InspectionModel>(
   {
@@ -104,7 +105,7 @@ inspectionSchema.pre('save', async function (next) {
   if (!isExistProduct) {
     throw new ApiError(StatusCodes.BAD_REQUEST, 'Product not found!');
   }
-  const isExistCustomer = await Customer.findOne({ _id: this.customer });
+  const isExistCustomer = await User.findOne({ _id: this.customer });
   if (!isExistCustomer) {
     throw new ApiError(StatusCodes.BAD_REQUEST, 'Customer not found!');
   }
