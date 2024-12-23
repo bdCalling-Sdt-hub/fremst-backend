@@ -81,6 +81,7 @@ const getAllInspections = async (queryFields: any, user: any): Promise<any> => {
     );
     return { latestInspection, history: finalFistory };
   }
+
   // let pipeline = [
   //   {
   //     $sort: {
@@ -128,9 +129,6 @@ const getAllInspections = async (queryFields: any, user: any): Promise<any> => {
         lastInspectionDate: -1,
       },
     },
-    ...(user && user.role === USER_ROLES.CUSTOMER
-      ? [{ $match: { customer: user.id } }]
-      : []),
     {
       $group: {
         _id: {
@@ -166,7 +164,11 @@ const getAllInspections = async (queryFields: any, user: any): Promise<any> => {
       $unwind: '$productInfo',
     },
   ];
-
+  if (user && user.role === USER_ROLES.CUSTOMER) {
+    pipeline.push({
+      $match: { customer: user.id },
+    });
+  }
   if (queryFields.search) {
     pipeline.push({
       $match: {
