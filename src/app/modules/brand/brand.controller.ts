@@ -16,7 +16,6 @@ const createBrand = catchAsync(async (req: Request, res: Response) => {
 
 const getAllBrands = catchAsync(async (req: Request, res: Response) => {
   const query = req.query;
-
   const result = await BrandService.getAllBrands(query);
   sendResponse(res, {
     statusCode: StatusCodes.OK,
