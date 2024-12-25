@@ -87,7 +87,10 @@ const deleteCustomer = async (id: string): Promise<IUser | null> => {
 };
 const getAllCustomersLean = async (): Promise<IUser[]> => {
   try {
-    return await User.find().select('_id name').lean().exec();
+    return await User.find({ role: USER_ROLES.CUSTOMER })
+      .select('_id name')
+      .lean()
+      .exec();
   } catch (error) {
     throw new Error(`Error fetching customers: ${error}`);
   }
