@@ -126,7 +126,7 @@ const getAllInspections = async (queryFields: any, user: any): Promise<any> => {
   // ];
   try {
     let query = Inspection.find()
-      .populate('customer', 'name email')
+      .populate('customer', 'name email companyName ')
       .populate('product', 'name image')
       .sort({ lastInspectionDate: -1 });
 
