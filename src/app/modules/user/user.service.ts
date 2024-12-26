@@ -245,7 +245,6 @@ const holdUser = async (id: string): Promise<Partial<string>> => {
 const isHold = async (id: string): Promise<Partial<boolean>> => {
   const user = await User.findOne({
     _id: id,
-    role: { $ne: USER_ROLES.SUPERADMIN },
   });
   if (!user) {
     throw new ApiError(StatusCodes.BAD_REQUEST, "User doesn't exist!");
