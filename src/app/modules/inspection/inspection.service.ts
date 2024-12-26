@@ -126,8 +126,8 @@ const getAllInspections = async (queryFields: any, user: any): Promise<any> => {
   // ];
   try {
     let query = Inspection.find()
-      .populate('product', 'name image')
       .populate('customer', 'name email')
+      .populate('product', 'name image')
       .sort({ lastInspectionDate: -1 });
 
     // If user is customer, only show their inspections
