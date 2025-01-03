@@ -8,10 +8,11 @@ import { StepRoutes } from '../app/modules/step/step.route';
 import { InspectionRoutes } from '../app/modules/inspection/inspection.route';
 import { OldInspectionRoutes } from '../app/modules/oldInspection/oldInspection.route';
 import { BrandRoutes } from '../app/modules/brand/brand.route';
+import { EmployeeRoutes } from '../app/modules/employee/employee.route';
 const router = express.Router();
 
 const apiRoutes = [
-  {
+{
     path: '/user',
     route: UserRoutes,
   },
@@ -46,6 +47,10 @@ const apiRoutes = [
   {
     path: '/brand',
     route: BrandRoutes,
+  },
+  {
+    path: '/employee',
+    route: EmployeeRoutes,
   },
 ];
 
