@@ -17,7 +17,7 @@ export const generatePdfStream = async (id: string, res: express.Response) => {
   );
 
   // Create question groups for pagination
-  const questionsPerPage = 2;
+  const questionsPerPage = 12;
   const questions = inspection.step.flatMap(step =>
     step.answers.map(answer => ({
       question: answer.question,
