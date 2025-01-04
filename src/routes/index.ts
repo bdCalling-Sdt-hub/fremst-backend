@@ -9,10 +9,11 @@ import { InspectionRoutes } from '../app/modules/inspection/inspection.route';
 import { OldInspectionRoutes } from '../app/modules/oldInspection/oldInspection.route';
 import { BrandRoutes } from '../app/modules/brand/brand.route';
 import { EmployeeRoutes } from '../app/modules/employee/employee.route';
+import { PdfRoutes } from '../app/modules/pdf/pdf.route';
 const router = express.Router();
 
 const apiRoutes = [
-{
+  {
     path: '/user',
     route: UserRoutes,
   },
@@ -51,6 +52,10 @@ const apiRoutes = [
   {
     path: '/employee',
     route: EmployeeRoutes,
+  },
+  {
+    path: '/pdf',
+    route: PdfRoutes,
   },
 ];
 

@@ -27,6 +27,7 @@ app.use('/profiles', express.static('uploads/profiles'));
 app.use('/inspectionImages', express.static('uploads/inspectionImages'));
 app.use('/medias', express.static('uploads/medias'));
 app.use('/pdfReports', express.static('uploads/pdfReports'));
+app.use('/pdfFiles', express.static('uploads/pdfFiles'));
 app.use('/docs', express.static('uploads/docs'));
 
 //router
