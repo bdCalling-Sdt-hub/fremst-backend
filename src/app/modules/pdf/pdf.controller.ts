@@ -5,7 +5,7 @@ import { StatusCodes } from 'http-status-codes';
 import { PdfService } from './pdf.service';
 const generatePdf = catchAsync(async (req: Request, res: Response) => {
   const id = req.params.id;
-  const pdf = await PdfService.generatePdf(id);
+  const pdf = await PdfService.generatePdfStream(id, res);
   sendResponse(res, {
     statusCode: StatusCodes.OK,
     success: true,

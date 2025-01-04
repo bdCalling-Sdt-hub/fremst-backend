@@ -1,12 +1,11 @@
 import express from 'express';
 import path from 'path';
-import fs from 'fs';
 import puppeteer from 'puppeteer';
 import { StatusCodes } from 'http-status-codes';
 import ApiError from '../../../errors/ApiError';
 import { Inspection } from '../inspection/inspection.model';
 
-export const generatePdf = async (id: string) => {
+export const generatePdfStream = async (id: string, res: express.Response) => {
   const inspection = await Inspection.findById(id).populate('product customer');
   if (!inspection) {
     throw new ApiError(StatusCodes.NOT_FOUND, 'Inspection not found');
@@ -18,11 +17,11 @@ export const generatePdf = async (id: string) => {
   );
 
   // Create question groups for pagination
-  const questionsPerPage = 5;
+  const questionsPerPage = 2;
   const questions = inspection.step.flatMap(step =>
     step.answers.map(answer => ({
       question: answer.question,
-      status: answer.isYes ? 'OK' : 'NOK',
+      status: answer.isYes ? 'YES' : 'NO',
       comment: answer.comment,
     }))
   );
@@ -138,22 +137,12 @@ export const generatePdf = async (id: string) => {
 </body>
 </html>`;
 
-    // Create PDF directory if not exists
-    const pdfDir = path.join(process.cwd(), 'uploads', 'pdfFiles');
-    if (!fs.existsSync(pdfDir)) {
-      fs.mkdirSync(pdfDir, { recursive: true });
-    }
-
-    // Generate unique filename
-    const fileName = `pdf-${Date.now()}.pdf`;
-    const filePath = path.join(pdfDir, fileName);
-
-    // Generate PDF
+    // Launch Puppeteer and generate PDF
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
     await page.setContent(htmlContent);
 
-    const pdf = await page.pdf({
+    const pdfBuffer = await page.pdf({
       format: 'A4',
       printBackground: true,
       margin: { top: '0px', right: '0px', bottom: '0px', left: '0px' },
@@ -161,13 +150,13 @@ export const generatePdf = async (id: string) => {
 
     await browser.close();
 
-    // Save PDF to file
-    fs.writeFileSync(filePath, pdf);
-
-    // Return file path
-    return {
-      filePath: `/pdfFiles/${fileName}`,
-    };
+    // Stream the PDF to the client
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename="inspection-report-${Date.now()}.pdf"`
+    );
+    res.end(pdfBuffer);
   } catch (error) {
     throw new ApiError(
       StatusCodes.INTERNAL_SERVER_ERROR,
@@ -271,5 +260,5 @@ function generateFooter(inspection: any) {
 }
 
 export const PdfService = {
-  generatePdf,
+  generatePdfStream,
 };
