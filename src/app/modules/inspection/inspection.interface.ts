@@ -27,7 +27,6 @@ export type IInspection = {
   isActive: boolean;
   storageLocation?: string;
   productImage: string;
-  pdfReport: string;
   lastInspectionDate: string;
   nextInspectionDate: Date;
 };
