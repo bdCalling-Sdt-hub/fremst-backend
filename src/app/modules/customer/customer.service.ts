@@ -53,8 +53,8 @@ const getAllCustomers = async (
   }
 };
 
-const getCustomerById = async (id: string): Promise<ICustomer | null> => {
-  const result = await Customer.findById(id);
+const getCustomerById = async (id: string): Promise<any> => {
+  const result = await User.findById(id);
   if (!result) {
     throw new ApiError(StatusCodes.BAD_REQUEST, 'Customer not found!');
   }
@@ -63,7 +63,7 @@ const getCustomerById = async (id: string): Promise<ICustomer | null> => {
 
 const updateCustomer = async (
   id: string,
-  payload: ICustomer
+  payload: IUser
 ): Promise<IUser | null> => {
   const result = await User.findByIdAndUpdate(id, payload, { new: true });
   if (!result) {

@@ -73,9 +73,9 @@ const createInspectionZodSchema = z.object({
   protocolId: z
     .string({ invalid_type_error: 'protocolId should be type string' })
     .optional(),
-  pdfReport: z
-    .string({ invalid_type_error: 'pdfReport should be type string' })
-    .optional(),
+  // pdfReport: z
+  //   .string({ invalid_type_error: 'pdfReport should be type string' })
+  //   .optional(),
   brand: z.string({
     required_error: 'brand is required',
     invalid_type_error: 'brand should be type string',

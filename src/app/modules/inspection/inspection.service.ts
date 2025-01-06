@@ -158,8 +158,9 @@ const getAllInspections = async (queryFields: any, user: any): Promise<any> => {
       serialNo: item.serialNo,
       enStandard: item.enStandard,
       lastInspectionDate: item.lastInspectionDate,
-      // @ts-ignore
-      pdfReport: item.pdfReport || 'Not Available',
+      pdfReport:
+        // @ts-ignore
+        typeof item.pdfReport === 'string' ? item.pdfReport : 'Not Available',
     }));
   } catch (error) {
     console.error('Error:', error);
