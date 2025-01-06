@@ -2,6 +2,7 @@ import { Schema, model } from 'mongoose';
 import { IOldInspection, OldInspectionModel } from './oldInspection.interface';
 import { Customer } from '../customer/customer.model';
 import { Product } from '../product/product.model';
+import { User } from '../user/user.model';
 
 const oldInspectionSchema = new Schema<IOldInspection, OldInspectionModel>(
   {
@@ -20,7 +21,7 @@ const oldInspectionSchema = new Schema<IOldInspection, OldInspectionModel>(
   { timestamps: true }
 );
 oldInspectionSchema.pre('save', async function (next) {
-  const isExistCustomer = await Customer.findOne({
+  const isExistCustomer = await User.findOne({
     _id: this.customer,
   });
   if (!isExistCustomer) {
