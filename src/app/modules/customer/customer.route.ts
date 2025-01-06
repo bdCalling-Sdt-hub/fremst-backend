@@ -4,13 +4,13 @@ import { USER_ROLES } from '../../../enums/user';
 import auth from '../../middlewares/auth';
 import validateRequest from '../../middlewares/validateRequest';
 import { CustomerValidation } from './customer.validation';
+import { UserValidation } from '../user/user.validation';
 
 const router = express.Router();
 
 router.post(
   '/add',
   auth(USER_ROLES.ADMIN, USER_ROLES.CUSTOMER, USER_ROLES.SUPERADMIN),
-  validateRequest(CustomerValidation.createCustomerZodSchema),
   CustomerController.createCustomer
 );
 router.get('/all', CustomerController.getAllCustomers);
