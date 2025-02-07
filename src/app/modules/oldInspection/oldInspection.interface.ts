@@ -3,7 +3,7 @@ import { Model, Types } from 'mongoose';
 export type IOldInspection = {
   customer: Types.ObjectId;
   product: Types.ObjectId;
-  lastInspectionDate: string;
+  lastInspectionDate: date;
   pdfReport: string;
   protocolId?: string;
 };

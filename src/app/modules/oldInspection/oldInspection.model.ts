@@ -8,7 +8,7 @@ const oldInspectionSchema = new Schema<IOldInspection, OldInspectionModel>(
   {
     customer: { type: Schema.Types.ObjectId, ref: 'Customer', required: true },
     product: { type: Schema.Types.ObjectId, ref: 'Product', required: true },
-    lastInspectionDate: { type: String, required: true },
+    lastInspectionDate: { type: Date, required: true },
     protocolId: {
       type: String,
       required: false,
