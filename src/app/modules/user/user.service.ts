@@ -142,7 +142,7 @@ const getHomeData = async (
     ]);
     const todaysDate = new Date();
     const thirtyDaysFromNow = new Date(todaysDate);
-    thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 30);
+    thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 180);
 
     // Find inspections that are either delayed or within the next 30 days
     const rawInspections = await Inspection.find({
