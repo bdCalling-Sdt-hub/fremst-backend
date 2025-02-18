@@ -126,8 +126,14 @@ const getAllInspections = async (queryFields: any, user: any): Promise<any> => {
   // ];
   try {
     let query = Inspection.find()
-      .populate('customer', 'name email companyName ')
-      .populate('product', 'name image')
+      .populate({
+        path: 'product',
+        select: 'name image type',
+      })
+      .populate({
+        path: 'customer',
+        select: 'name email companyName contactPerson address',
+      })
       .sort({ lastInspectionDate: -1 });
 
     // If user is customer, only show their inspections
@@ -162,8 +168,18 @@ const getAllInspections = async (queryFields: any, user: any): Promise<any> => {
 
     return result.map((item: any) => ({
       _id: item._id,
-      product: item.product,
-      customer: item.customer,
+      product: {
+        name: item.product.name,
+        image: item.product.image,
+        type: item.product.type,
+      },
+      customer: {
+        name: item.customer.name,
+        email: item.customer.email,
+        companyName: item.customer.companyName,
+        contactPerson: item.customer.contactPerson,
+        address: item.customer.address,
+      },
       sku: item.sku,
       serialNo: item.serialNo,
       enStandard: item.enStandard,
