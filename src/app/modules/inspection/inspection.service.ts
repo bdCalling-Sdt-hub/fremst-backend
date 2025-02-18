@@ -138,18 +138,14 @@ const getAllInspections = async (queryFields: any, user: any): Promise<any> => {
     // Basic search
     if (queryFields?.search) {
       query = query.or([
-        { sku: { $regex: new RegExp(queryFields.search, 'i') } },
-        { serialNo: { $regex: new RegExp(queryFields.search, 'i') } },
-        { enStandard: { $regex: new RegExp(queryFields.search, 'i') } },
-        { protocolId: { $regex: new RegExp(queryFields.search, 'i') } },
-        { 'product.name': { $regex: new RegExp(queryFields.search, 'i') } },
-        { 'customer.name': { $regex: new RegExp(queryFields.search, 'i') } },
-        { 'customer.email': { $regex: new RegExp(queryFields.search, 'i') } },
-        {
-          'customer.companyName': {
-            $regex: new RegExp(queryFields.search, 'i'),
-          },
-        },
+        { sku: new RegExp(queryFields.search, 'i') },
+        { serialNo: new RegExp(queryFields.search, 'i') },
+        { enStandard: new RegExp(queryFields.search, 'i') },
+        { protocolId: new RegExp(queryFields.search, 'i') },
+        { 'product.name': new RegExp(queryFields.search, 'i') },
+        { 'customer.name': new RegExp(queryFields.search, 'i') },
+        { 'customer.email': new RegExp(queryFields.search, 'i') },
+        { 'customer.companyName': new RegExp(queryFields.search, 'i') },
       ]);
     }
 
@@ -159,7 +155,7 @@ const getAllInspections = async (queryFields: any, user: any): Promise<any> => {
 
     const result = await query.lean();
 
-    return result.map(item => ({
+    return result.map((item: any) => ({
       _id: item._id,
       product: item.product,
       customer: item.customer,
