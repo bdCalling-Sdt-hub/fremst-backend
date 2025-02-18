@@ -245,6 +245,7 @@ const deleteInspection = async (id: string): Promise<any | null> => {
       customer: isExistInspection.customer,
       product: isExistInspection.product,
     });
+    return isExistInspection;
   }
   const result = await Inspection.findByIdAndDelete(id);
   if (!result) {
