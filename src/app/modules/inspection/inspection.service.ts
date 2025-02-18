@@ -138,12 +138,12 @@ const getAllInspections = async (queryFields: any, user: any): Promise<any> => {
     // Basic search
     if (queryFields?.search) {
       query = query.or([
+        { 'product.name': new RegExp(queryFields.search, 'i') },
+        { 'customer.companyName': new RegExp(queryFields.search, 'i') },
         { sku: new RegExp(queryFields.search, 'i') },
         { serialNo: new RegExp(queryFields.search, 'i') },
         { enStandard: new RegExp(queryFields.search, 'i') },
         { protocolId: new RegExp(queryFields.search, 'i') },
-        { product: new RegExp(queryFields.search, 'i') },
-        { customer: new RegExp(queryFields.search, 'i') },
       ]);
     }
 
