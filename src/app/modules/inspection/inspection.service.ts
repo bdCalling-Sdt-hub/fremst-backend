@@ -232,7 +232,20 @@ const deleteInspection = async (id: string): Promise<any | null> => {
     const result = await OldInspectionService.deleteOldInspection(id);
     return result;
   }
-
+  const latestInspection = await Inspection.findOne({
+    customer: isExistInspection.customer,
+    product: isExistInspection.product,
+  }).sort({ lastInspectionDate: -1 });
+  if (latestInspection === isExistInspection) {
+    await Inspection.deleteMany({
+      customer: isExistInspection.customer,
+      product: isExistInspection.product,
+    });
+    await OldInspection.deleteMany({
+      customer: isExistInspection.customer,
+      product: isExistInspection.product,
+    });
+  }
   const result = await Inspection.findByIdAndDelete(id);
   if (!result) {
     throw new ApiError(StatusCodes.BAD_REQUEST, 'Failed to delete inspection!');
