@@ -236,7 +236,7 @@ const deleteInspection = async (id: string): Promise<any | null> => {
     customer: isExistInspection.customer,
     product: isExistInspection.product,
   }).sort({ lastInspectionDate: -1 });
-  if (latestInspection === isExistInspection) {
+  if (latestInspection?._id.toString() === isExistInspection._id.toString()) {
     await Inspection.deleteMany({
       customer: isExistInspection.customer,
       product: isExistInspection.product,
