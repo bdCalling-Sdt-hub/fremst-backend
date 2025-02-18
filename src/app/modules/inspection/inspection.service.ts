@@ -142,6 +142,14 @@ const getAllInspections = async (queryFields: any, user: any): Promise<any> => {
         { serialNo: new RegExp(queryFields.search, 'i') },
         { enStandard: new RegExp(queryFields.search, 'i') },
         { protocolId: new RegExp(queryFields.search, 'i') },
+        { 'product.name': { $regex: new RegExp(queryFields.search, 'i') } },
+        { 'customer.name': { $regex: new RegExp(queryFields.search, 'i') } },
+        { 'customer.email': { $regex: new RegExp(queryFields.search, 'i') } },
+        {
+          'customer.companyName': {
+            $regex: new RegExp(queryFields.search, 'i'),
+          },
+        },
       ]);
     }
 
