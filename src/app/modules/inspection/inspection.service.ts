@@ -138,18 +138,20 @@ const getAllInspections = async (queryFields: any, user: any): Promise<any> => {
     // Basic search
     if (queryFields?.search) {
       const searchRegex = new RegExp(queryFields.search, 'i');
-      query = query.or([
-        { 'product.name': searchRegex },
-        { 'customer.companyName': searchRegex },
-        { 'customer.contactPerson': searchRegex },
-        { 'customer.email': searchRegex },
-        { 'customer.address': searchRegex },
-        { sku: searchRegex },
-        { serialNo: searchRegex },
-        { enStandard: searchRegex },
-        { protocolId: searchRegex },
-        { 'product.type': searchRegex },
-      ]);
+      query = query.find({
+        $or: [
+          { 'product.name': searchRegex },
+          { 'customer.companyName': searchRegex },
+          { 'customer.contactPerson': searchRegex },
+          { 'customer.email': searchRegex },
+          { 'customer.address': searchRegex },
+          { sku: searchRegex },
+          { serialNo: searchRegex },
+          { enStandard: searchRegex },
+          { protocolId: searchRegex },
+          { 'product.type': searchRegex },
+        ],
+      });
     }
 
     // Simple pagination
