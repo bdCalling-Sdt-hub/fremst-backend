@@ -123,11 +123,13 @@ const getAllInspections = async (queryFields: any, user: any): Promise<any> => {
     return paginatedResults.map((item: any) => ({
       _id: item._id,
       product: {
+        _id: item.product._id,
         name: item.product.name,
         image: item.product.image,
         type: item.product.type,
       },
       customer: {
+        _id: item.customer._id,
         name: item.customer.name,
         email: item.customer.email,
         companyName: item.customer.companyName,
