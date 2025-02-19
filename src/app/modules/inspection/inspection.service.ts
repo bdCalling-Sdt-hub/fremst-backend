@@ -106,6 +106,8 @@ const getAllInspections = async (queryFields: any, user: any): Promise<any> => {
     const filteredResults = result.filter((item: any) => {
       return (
         searchRegex.test(item.customer.name) ||
+        searchRegex.test(item.customer.companyName) ||
+        searchRegex.test(item.customer.email) ||
         searchRegex.test(item.product.name) ||
         searchRegex.test(item.serialNo) ||
         searchRegex.test(item.protocolId) ||
