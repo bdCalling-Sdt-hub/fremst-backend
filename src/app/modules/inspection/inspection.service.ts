@@ -83,47 +83,6 @@ const getAllInspections = async (queryFields: any, user: any): Promise<any> => {
     return { latestInspection, history: finalFistory };
   }
 
-  // let pipeline = [
-  //   {
-  //     $sort: {
-  //       lastInspectionDate: -1,
-  //     },
-  //   },
-  //   {
-  //     $group: {
-  //       _id: {
-  //         product: '$product',
-  //         customer: '$customer',
-  //       },
-  //       doc: { $first: '$$ROOT' },
-  //     },
-  //   },
-  //   {
-  //     $replaceRoot: { newRoot: '$doc' },
-  //   },
-  //   {
-  //     $lookup: {
-  //       from: 'customers',
-  //       localField: 'customer',
-  //       foreignField: '_id',
-  //       as: 'customerInfo',
-  //     },
-  //   },
-  //   {
-  //     $lookup: {
-  //       from: 'products',
-  //       localField: 'product',
-  //       foreignField: '_id',
-  //       as: 'productInfo',
-  //     },
-  //   },
-  //   {
-  //     $unwind: '$customerInfo',
-  //   },
-  //   {
-  //     $unwind: '$productInfo',
-  //   },
-  // ];
   try {
     let query = Inspection.find()
       .populate({
@@ -143,18 +102,21 @@ const getAllInspections = async (queryFields: any, user: any): Promise<any> => {
 
     // Basic search
     if (queryFields?.search) {
+      const searchRegex = new RegExp(queryFields.search, 'i');
       query = query.find({
         $or: [
-          { customer: { $regex: queryFields.search, $options: 'i' } },
-          { product: { $regex: queryFields.search, $options: 'i' } },
-          { serialNo: { $regex: queryFields.search, $options: 'i' } },
-          { protocolId: { $regex: queryFields.search, $options: 'i' } },
-          { enStandard: { $regex: queryFields.search, $options: 'i' } },
-          { sku: { $regex: queryFields.search, $options: 'i' } },
+          { 'customer.name': searchRegex }, // Search on populated customer name
+          { 'product.name': searchRegex }, // Search on populated product name
+          { serialNo: searchRegex },
+          { protocolId: searchRegex },
+          { enStandard: searchRegex },
+          { sku: searchRegex },
         ],
       });
     }
+
     console.log(query);
+
     // Simple pagination
     const skip = ((page || 1) - 1) * (limit || 10);
     query = query.skip(skip).limit(limit || 10);
