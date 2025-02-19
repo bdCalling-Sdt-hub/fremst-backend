@@ -144,11 +144,14 @@ const getAllInspections = async (queryFields: any, user: any): Promise<any> => {
     // Basic search
     if (queryFields?.search) {
       query = query.find({
-        $text: {
-          $search: queryFields.search,
-          $caseSensitive: false,
-          $diacriticSensitive: false,
-        },
+        $or: [
+          { customer: { $regex: queryFields.search, $options: 'i' } },
+          { product: { $regex: queryFields.search, $options: 'i' } },
+          { serialNo: { $regex: queryFields.search, $options: 'i' } },
+          { protocolId: { $regex: queryFields.search, $options: 'i' } },
+          { enStandard: { $regex: queryFields.search, $options: 'i' } },
+          { sku: { $regex: queryFields.search, $options: 'i' } },
+        ],
       });
     }
 
