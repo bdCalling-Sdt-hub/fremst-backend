@@ -82,48 +82,65 @@ const getAllInspections = async (queryFields: any, user: any): Promise<any> => {
     );
     return { latestInspection, history: finalFistory };
   }
-
   try {
-    let query = Inspection.find()
-      .populate({
-        path: 'product',
-        select: 'name image type',
-      })
-      .populate({
-        path: 'customer',
-        select: 'name email companyName contactPerson address',
-      })
-      .sort({ lastInspectionDate: -1 });
+    const searchRegex = new RegExp(queryFields?.search || '', 'i');
 
-    // If user is customer, only show their inspections
+    const aggregationPipeline = [
+      {
+        $lookup: {
+          from: 'users', // The collection name for customers
+          localField: 'customer',
+          foreignField: '_id',
+          as: 'customer',
+        },
+      },
+      {
+        $unwind: '$customer', // Since customer is a single reference, unwind the array
+      },
+      {
+        $lookup: {
+          from: 'products', // The collection name for products
+          localField: 'product',
+          foreignField: '_id',
+          as: 'product',
+        },
+      },
+      {
+        $unwind: '$product', // Since product is a single reference, unwind the array
+      },
+      {
+        $match: {
+          $or: [
+            { 'customer.name': searchRegex }, // Search on customer name
+            { 'product.name': searchRegex }, // Search on product name
+            { serialNo: searchRegex },
+            { protocolId: searchRegex },
+            { enStandard: searchRegex },
+            { sku: searchRegex },
+          ],
+        },
+      },
+      {
+        $sort: { lastInspectionDate: -1 }, // Sort by lastInspectionDate
+      },
+      {
+        $skip: ((page || 1) - 1) * (limit || 10), // Pagination: skip
+      },
+      {
+        $limit: limit || 10, // Pagination: limit
+      },
+    ];
+
+    // If user is a customer, filter by their ID
     if (user?.role === USER_ROLES.CUSTOMER) {
-      query = query.where('customer', user.id);
-    }
-
-    // Basic search
-    if (queryFields?.search) {
-      const searchRegex = new RegExp(queryFields.search, 'i');
-      query = query.find({
-        $or: [
-          { 'customer.name': searchRegex }, // Search on populated customer name
-          { 'product.name': searchRegex }, // Search on populated product name
-          { serialNo: searchRegex },
-          { protocolId: searchRegex },
-          { enStandard: searchRegex },
-          { sku: searchRegex },
-        ],
+      aggregationPipeline.unshift({
+        $match: { customer: user.id },
       });
     }
 
-    console.log(query);
+    const result = await Inspection.aggregate(aggregationPipeline);
 
-    // Simple pagination
-    const skip = ((page || 1) - 1) * (limit || 10);
-    query = query.skip(skip).limit(limit || 10);
-
-    const result = await query;
-
-    return result.map((item: any) => ({
+    return result.map(item => ({
       _id: item._id,
       product: {
         name: item.product.name,
@@ -142,7 +159,6 @@ const getAllInspections = async (queryFields: any, user: any): Promise<any> => {
       enStandard: item.enStandard,
       lastInspectionDate: item.lastInspectionDate,
       pdfReport:
-        // @ts-ignore
         typeof item.pdfReport === 'string' ? item.pdfReport : 'Not Available',
     }));
   } catch (error) {
