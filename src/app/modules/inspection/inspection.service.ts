@@ -154,12 +154,12 @@ const getAllInspections = async (queryFields: any, user: any): Promise<any> => {
         ],
       });
     }
-
+    console.log(query);
     // Simple pagination
     const skip = ((page || 1) - 1) * (limit || 10);
     query = query.skip(skip).limit(limit || 10);
 
-    const result = await query.lean();
+    const result = await query;
 
     return result.map((item: any) => ({
       _id: item._id,
