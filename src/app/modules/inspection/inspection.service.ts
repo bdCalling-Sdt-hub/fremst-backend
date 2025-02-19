@@ -125,69 +125,146 @@ const getAllInspections = async (queryFields: any, user: any): Promise<any> => {
   //   },
   // ];
   try {
-    let query = Inspection.find()
-      .populate({
-        path: 'product',
-        select: 'name image type',
-      })
-      .populate({
-        path: 'customer',
-        select: 'name email companyName contactPerson address',
-      })
-      .sort({ lastInspectionDate: -1 });
+    const searchConditions = queryFields?.search
+      ? {
+          $or: [
+            { sku: { $regex: queryFields.search, $options: 'i' } },
+            { serialNo: { $regex: queryFields.search, $options: 'i' } },
+            { enStandard: { $regex: queryFields.search, $options: 'i' } },
+            { 'product.name': { $regex: queryFields.search, $options: 'i' } },
+            { 'customer.name': { $regex: queryFields.search, $options: 'i' } },
+            {
+              'customer.companyName': {
+                $regex: queryFields.search,
+                $options: 'i',
+              },
+            },
+          ],
+        }
+      : {};
 
-    // If user is customer, only show their inspections
-    if (user?.role === USER_ROLES.CUSTOMER) {
-      query = query.where('customer', user.id);
-    }
+    // Prepare customer condition if user is customer
+    const customerCondition =
+      user?.role === USER_ROLES.CUSTOMER
+        ? { customer: new Types.ObjectId(user.id) }
+        : {};
 
-    // Basic search
-    if (queryFields?.search) {
-      const searchRegex = new RegExp(queryFields.search, 'i');
-      query = query.find({
-        $or: [
-          { 'product.name': searchRegex },
-          { 'customer.companyName': searchRegex },
-          { 'customer.contactPerson': searchRegex },
-          { 'customer.email': searchRegex },
-          { 'customer.address': searchRegex },
-          { sku: searchRegex },
-          { serialNo: searchRegex },
-          { enStandard: searchRegex },
-          { protocolId: searchRegex },
-          { 'product.type': searchRegex },
-        ],
-      });
-    }
-
-    // Simple pagination
+    // Calculate pagination
     const skip = ((page || 1) - 1) * (limit || 10);
-    query = query.skip(skip).limit(limit || 10);
+    const paginationLimit = limit || 10;
 
-    const result = await query.lean();
+    const pipeline = [
+      // First lookup product
+      {
+        $lookup: {
+          from: 'products',
+          localField: 'product',
+          foreignField: '_id',
+          as: 'product',
+        },
+      },
+      // Then lookup customer
+      {
+        $lookup: {
+          from: 'customers',
+          localField: 'customer',
+          foreignField: '_id',
+          as: 'customer',
+        },
+      },
+      // Unwind product array to object
+      {
+        $unwind: '$product',
+      },
+      // Unwind customer array to object
+      {
+        $unwind: '$customer',
+      },
+      // Apply customer filter if exists
+      ...(Object.keys(customerCondition).length
+        ? [
+            {
+              $match: customerCondition,
+            },
+          ]
+        : []),
+      // Apply search if exists
+      ...(Object.keys(searchConditions).length
+        ? [
+            {
+              $match: searchConditions,
+            },
+          ]
+        : []),
+      // Sort by date
+      {
+        $sort: { lastInspectionDate: -1 },
+      },
+      // Get total count before pagination
+      {
+        $facet: {
+          metadata: [{ $count: 'total' }],
+          data: [
+            { $skip: skip },
+            { $limit: paginationLimit },
+            // Project only needed fields
+            {
+              $project: {
+                _id: 1,
+                'product.name': 1,
+                'product.image': 1,
+                'product.type': 1,
+                'customer.name': 1,
+                'customer.email': 1,
+                'customer.companyName': 1,
+                'customer.contactPerson': 1,
+                'customer.address': 1,
+                sku: 1,
+                serialNo: 1,
+                enStandard: 1,
+                lastInspectionDate: 1,
+                pdfReport: 1,
+              },
+            },
+          ],
+        },
+      },
+    ];
 
-    return result.map((item: any) => ({
+    const [result] = await Inspection.aggregate(pipeline);
+
+    const totalCount = result.metadata[0]?.total || 0;
+    const transformedResults = result.data.map((item: any) => ({
       _id: item._id,
       product: {
-        name: item.product.name,
-        image: item.product.image,
-        type: item.product.type,
+        name: item.product?.name || 'N/A',
+        image: item.product?.image || 'N/A',
+        type: item.product?.type || 'N/A',
       },
       customer: {
-        name: item.customer.name,
-        email: item.customer.email,
-        companyName: item.customer.companyName,
-        contactPerson: item.customer.contactPerson,
-        address: item.customer.address,
+        name: item.customer?.name || 'N/A',
+        email: item.customer?.email || 'N/A',
+        companyName: item.customer?.companyName || 'N/A',
+        contactPerson: item.customer?.contactPerson || 'N/A',
+        address: item.customer?.address || 'N/A',
       },
-      sku: item.sku,
-      serialNo: item.serialNo,
-      enStandard: item.enStandard,
+      sku: item.sku || 'N/A',
+      serialNo: item.serialNo || 'N/A',
+      enStandard: item.enStandard || 'N/A',
       lastInspectionDate: item.lastInspectionDate,
       pdfReport:
-        // @ts-ignore
         typeof item.pdfReport === 'string' ? item.pdfReport : 'Not Available',
     }));
+
+    return {
+      results: transformedResults,
+      pagination: {
+        currentPage: page || 1,
+        totalPages: Math.ceil(totalCount / paginationLimit),
+        totalItems: totalCount,
+        itemsPerPage: paginationLimit,
+      },
+    };
   } catch (error) {
     console.error('Error:', error);
     throw new ApiError(
