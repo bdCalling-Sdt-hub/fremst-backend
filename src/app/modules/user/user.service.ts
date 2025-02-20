@@ -142,25 +142,22 @@ const getHomeData = async (
     ]);
     const todaysDate = new Date();
     const thirtyDaysFromNow = new Date(todaysDate);
-    thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 180);
+    thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 720);
 
-    // Find inspections that are either delayed or within the next 30 days
     const rawInspections = await Inspection.find({
       isActive: true,
       $or: [
-        { nextInspectionDate: { $lt: todaysDate } }, // delayed inspections
-        { nextInspectionDate: { $lte: thirtyDaysFromNow, $gte: todaysDate } }, // upcoming within 30 days
+        { nextInspectionDate: { $lt: todaysDate } },
+        { nextInspectionDate: { $lte: thirtyDaysFromNow, $gte: todaysDate } },
       ],
     }).populate({
       path: 'product customer',
       select: 'name brand companyName contactPerson',
     });
 
-    // Process inspections to add delayedDays
     const inspections = rawInspections.map(rawInspection => {
       //@ts-ignore
       const inspection = rawInspection._doc;
-      // Calculate delayed days if the inspection is past due
       const delayedDays =
         inspection.nextInspectionDate < todaysDate
           ? Math.ceil(
